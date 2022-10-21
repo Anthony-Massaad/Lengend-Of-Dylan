@@ -31,6 +31,7 @@ class Game:
             # delta time needed to make everything frame rate independent 
             # so, regardless of the fps, the game will be executed at the same speed.
             delta_time = self.clock.tick() / 1000
+            # print(delta_time)
             self.world.run(delta_time)
             pygame.display.update()
 
