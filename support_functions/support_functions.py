@@ -1,5 +1,4 @@
 from os import walk
-from numpy import full
 import pygame
 
 class SupportFunctions:

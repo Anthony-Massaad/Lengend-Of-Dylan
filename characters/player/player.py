@@ -5,9 +5,13 @@ from enum import Enum
 class Movement(Enum):
     UP = 'up'
     UP_IDLE = "up_idle"
-
-
-
+    DOWN = 'down'
+    DOWN_IDLE = 'down_idle'
+    LEFT = 'left'
+    LEFT_IDLE = 'left_idle'
+    RIGHT = 'right'
+    RIGHT_IDLE = 'right_idle'
+    
 class Player(pygame.sprite.Sprite):
     
     def __init__(self, position, group):
@@ -27,18 +31,23 @@ class Player(pygame.sprite.Sprite):
     def controls(self):
         keys = pygame.key.get_pressed()
 
+        # Vertical movements
         if keys[pygame.K_UP]:
             self.direction.y = -1
-            self.status = Movement.UP.value
+            self.movement_status = Movement.UP.value
         elif keys[pygame.K_DOWN]:
             self.direction.y = 1
+            self.movement_status = Movement.DOWN.value
         else:
             self.direction.y = 0
 
+        # Horizontal movements
         if keys[pygame.K_RIGHT]:
             self.direction.x = 1
+            self.movement_status = Movement.RIGHT.value
         elif keys[pygame.K_LEFT]:
             self.direction.x = -1
+            self.movement_status = Movement.LEFT.value
         else: 
             self.direction.x = 0
 
@@ -56,13 +65,17 @@ class Player(pygame.sprite.Sprite):
         self.rect.centery = self.position.y
     
     def import_graphics(self):
-        # dict key matches folder name
-        self.animations = {Movement.UP.value: [], Movement.UP_IDLE.value: []}
+        # dictonary keys matches folder name
+        self.animations = {
+            Movement.UP.value: [], Movement.UP_IDLE.value: [], 
+            Movement.DOWN.value: [], Movement.DOWN_IDLE.value: [],
+            Movement.LEFT.value: [], Movement.LEFT_IDLE.value: [],
+            Movement.RIGHT.value: [], Movement.RIGHT_IDLE.value: [],
+        }
         general_path = 'graphics/character/'
         for animation_key in self.animations.keys():
             animation_path = general_path + animation_key
             self.animations[animation_key] = SupportFunctions.import_folder(animation_path)
-        # print(self.animations)
     
     def animate_character(self, delta_time):
         self.player_frame += 4 * delta_time
