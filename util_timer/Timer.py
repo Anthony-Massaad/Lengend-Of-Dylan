@@ -61,4 +61,5 @@ class Timer:
             self.stop_timer()
             if self.function:
                 self.function()
+                
             
