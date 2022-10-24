@@ -1,8 +1,9 @@
 import pygame
 from support_functions.support_functions import SupportFunctions
 from enum import Enum
-from util_timer.Timer import Timer
+from util_timer.timer import Timer
 
+# Class constans for all the player movements. Name is relative to the folder directory 
 class Movement(Enum):
     UP = 'up'
     UP_IDLE = "up_idle"
@@ -17,15 +18,17 @@ class Movement(Enum):
     RIGHT_IDLE = 'right_idle'
     RIGHT_SWING = "right_swing"
 
+# Class constant for all the player weapon animations. Name is relative to the folder directory 
 class Weapon(Enum):
     SWORD = '_swing'
 
+# Class constants for all ther player abilities linked to the Timer
 class TimerObjects(Enum):
     WEAPON_USE = 'use weapon'
 
 class Player(pygame.sprite.Sprite):
-    
-    def __init__(self, position, group):
+
+    def __init__(self, position: tuple, group: pygame.sprite.Group):
         super().__init__(group)
         # get the basic graphics of the player
         self.import_graphics()

@@ -5,7 +5,15 @@ from constants import Scaling
 class SupportFunctions:
 
     @classmethod
-    def import_folder(cls, path):
+    def import_folder(cls, path: str) -> list:
+        """collect all the images given a directory path, add them to a pygame surface and return a list
+
+        Args:
+            path (str): the file path where all the images for a given movement is located
+
+        Returns:
+            list: list of the image surface for a given movement of the character
+        """
         image_surface_list = []
         for folder in walk(path):
             img_files = folder[2]

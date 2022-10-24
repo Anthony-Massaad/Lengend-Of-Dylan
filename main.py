@@ -3,20 +3,21 @@ import sys
 from constants import *
 from world.world import World
 
-pygame.init()
-display = pygame.display.set_mode((GAME_WIDTH + 1, GAME_HEIGHT + 1))
-pygame.display.set_caption('Legend of Dylan')
-
 class Game:
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Game initialization and setup
+        """
         pygame.init()
         self.display = pygame.display.set_mode((GAME_WIDTH + 1, GAME_HEIGHT + 1))
         pygame.display.set_caption('Legend of Dylan')
         self.clock = pygame.time.Clock()
         self.world = World()
     
-    def run(self):
+    def run(self) -> None:
+        """
+            Main game loop
+        """
         while True: 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
