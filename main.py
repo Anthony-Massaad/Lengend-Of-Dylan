@@ -15,11 +15,6 @@ class Game:
         pygame.display.set_caption('Legend of Dylan')
         self.clock = pygame.time.Clock()
         self.world = World()
-
-    def _draw_grid(self):
-        for i in range(SQUARE_DISTANCE):
-            pygame.draw.line(display, (0, 0, 0), (1, i * SQUARE_DISTANCE),  (GAME_WIDTH, i * SQUARE_DISTANCE), 3)
-            pygame.draw.line(display, (0, 0, 0), (i*SQUARE_DISTANCE, 1), (i*SQUARE_DISTANCE, GAME_HEIGHT), 3)
     
     def run(self):
         while True: 

@@ -9,7 +9,6 @@ class World:
         self.display_surface = pygame.display.get_surface() 
         # all objects in the game 
         self.all_sprites = pygame.sprite.Group()
-
         self.setup()
 
     def setup(self):
