@@ -1,7 +1,7 @@
 import pygame
 from support_functions.support_functions import SupportFunctions
 from enum import Enum
-from util_timer.timer import Timer
+from util_timer.util_timer import Timer
 
 # Class constans for all the player movements. Name is relative to the folder directory 
 class Movement(Enum):
