@@ -1,11 +1,11 @@
 import pygame
 
-class Item(pygame.sprite.Sprite):
+class Item:
 
-    def __init__(self, name, ability,  group):
-        super().__init__(group)
+    def __init__(self, name: str, ability: dict, description: str):
         self.name = name
         self.ability = ability
+        self.description = description
     
-    def display_description(self):
-        ...
+    def check_equals(self, other_item):
+        return self.name == other_item.name and self.ability == other_item.ability

@@ -3,6 +3,9 @@ from support_functions.support_functions import SupportFunctions
 from enum import Enum
 from util_timer.util_timer import Timer
 from inventory.inventory import Inventory
+from constants import CharacterInfo
+from item.item import Item
+from item.item_data import ItemData
 
 # Class constans for all the player movements. Name is relative to the folder directory 
 class Movement(Enum):
@@ -31,7 +34,12 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, position: tuple, group: pygame.sprite.Group):
         super().__init__(group)
-        self.health = 100
+        self.character_info = {
+            CharacterInfo.HEALTH.value: 100, 
+            CharacterInfo.DEFENSE.value: 25,
+            CharacterInfo.ATTACK.value: 10,
+            CharacterInfo.STAMINA.value: 100
+        }
         # get the basic graphics of the player
         self.import_graphics()
         self.movement_status = Movement.DOWN_IDLE.value
@@ -53,6 +61,12 @@ class Player(pygame.sprite.Sprite):
 
         # inventory
         self.inventory = Inventory()
+        self.inventory.add_item(Item('beer', ItemData.beer(), 'my beer'), 1)
+        self.inventory.add_item(Item('beer', ItemData.beer(), 'my beer'), 5)
+        self.inventory.add_item(Item('water', ItemData.water(), 'my water'), 6)
+        self.inventory.remove_item(Item('water', ItemData.water(), 'my water'), 5)
+
+        # self.inventory.add_item(Item('beer', ItemData.beer(), 'beer'), 1)
 
     def controls(self):
         keys = pygame.key.get_pressed()
