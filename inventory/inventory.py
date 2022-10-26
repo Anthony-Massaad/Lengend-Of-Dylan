@@ -25,7 +25,6 @@ class Inventory:
                     del self.items[inventory_item]
                 else:
                     self.remove_from_item(inventory_item, quantity)
-                print(self.items)
                 return
     
     

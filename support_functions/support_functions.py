@@ -19,7 +19,7 @@ class SupportFunctions:
             img_files = folder[2]
             for image in img_files:
                 full_path = path + "/" + image
-                image_surface = pygame.image.load(full_path)
+                image_surface = pygame.image.load(full_path).convert_alpha()
                 # image_surface = pygame.transform.scale(image_surface, (Scaling.PLAYER_WIDTH.value, Scaling.PLAYER_HEIGHT.value))
                 image_surface_list.append(image_surface)
 

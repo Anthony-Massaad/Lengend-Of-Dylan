@@ -3,7 +3,7 @@ from support_functions.support_functions import SupportFunctions
 from enum import Enum
 from util_timer.util_timer import Timer
 from inventory.inventory import Inventory
-from constants import CharacterInfo
+from constants import CharacterInfo, GAME_LAYERS, GameLayerKeys
 from item.item import Item
 from item.item_data import ItemData
 
@@ -47,6 +47,7 @@ class Player(pygame.sprite.Sprite):
         # image of the sprite (width, height)
         self.image = self.animations[self.movement_status][self.player_frame]
         self.rect = self.image.get_rect(center = position)
+        self.z_index = GAME_LAYERS[GameLayerKeys.MAIN.value]
         # vector direction as x = 0, y = 0
         self.direction = pygame.math.Vector2()
         self.position = pygame.math.Vector2(self.rect.center)
@@ -61,12 +62,6 @@ class Player(pygame.sprite.Sprite):
 
         # inventory
         self.inventory = Inventory()
-        self.inventory.add_item(Item('beer', ItemData.beer(), 'my beer'), 1)
-        self.inventory.add_item(Item('beer', ItemData.beer(), 'my beer'), 5)
-        self.inventory.add_item(Item('water', ItemData.water(), 'my water'), 6)
-        self.inventory.remove_item(Item('water', ItemData.water(), 'my water'), 5)
-
-        # self.inventory.add_item(Item('beer', ItemData.beer(), 'beer'), 1)
 
     def controls(self):
         keys = pygame.key.get_pressed()
@@ -153,7 +148,6 @@ class Player(pygame.sprite.Sprite):
         
         if self.timers[TimerObjects.WEAPON_USE.value].check_active():
             self.movement_status = self.add_action_to_respected_status(self.selected_weapon)
-
 
     def update(self, delta_time):
         self.controls()
