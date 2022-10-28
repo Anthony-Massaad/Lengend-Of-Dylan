@@ -27,7 +27,7 @@ class World:
     def setup(self) -> None:
         """Create the world setup
         """
-        self.player = Player((GAME_WIDTH//2, GAME_WIDTH//2), self.all_sprites)
+        self.player = Player((GAME_WIDTH//2, GAME_WIDTH//2), self.all_sprites, self.display_surface)
         
         # room 
         GenericSprites(

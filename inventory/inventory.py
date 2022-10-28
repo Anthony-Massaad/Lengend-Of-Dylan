@@ -27,5 +27,8 @@ class Inventory:
                     self.remove_from_item(inventory_item, quantity)
                 return
     
+    def get_keys(self):
+        return self.items.keys()
+    
     
 

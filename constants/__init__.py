@@ -26,9 +26,13 @@ class GameLayerKeys(Enum):
     GROUND = 'ground'
     PLANT = 'plant'
     MAIN = 'main'
+    IVENTORY = 'inventory'
+    IVENTORY_ITEM = 'item'
 
 GAME_LAYERS = {
     GameLayerKeys.GROUND.value: 1,
     GameLayerKeys.PLANT.value: 6,
-    GameLayerKeys.MAIN.value: 7 
+    GameLayerKeys.MAIN.value: 7,
+    GameLayerKeys.IVENTORY.value: 8,
+    GameLayerKeys.IVENTORY_ITEM.value: 9,
 }

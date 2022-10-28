@@ -3,7 +3,8 @@ from support_functions.support_functions import SupportFunctions
 from enum import Enum
 from util_timer.util_timer import Timer
 from inventory.inventory import Inventory
-from constants import CharacterInfo, GAME_LAYERS, GameLayerKeys
+from inventory.inventory_gui import InventoryGUI
+from constants import CharacterInfo, GAME_LAYERS, GameLayerKeys, ItemName
 from item.item import Item
 from item.item_data import ItemData
 
@@ -32,7 +33,7 @@ class TimerObjects(Enum):
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, position: tuple, group: pygame.sprite.Group):
+    def __init__(self, position: tuple, group: pygame.sprite.Group, screen):
         super().__init__(group)
         self.character_info = {
             CharacterInfo.HEALTH.value: 100, 
@@ -44,6 +45,7 @@ class Player(pygame.sprite.Sprite):
         self.import_graphics()
         self.movement_status = Movement.DOWN_IDLE.value
         self.player_frame = 0 
+        self.screen = screen
         # image of the sprite (width, height)
         self.image = self.animations[self.movement_status][self.player_frame]
         self.rect = self.image.get_rect(center = position)
@@ -62,10 +64,18 @@ class Player(pygame.sprite.Sprite):
 
         # inventory
         self.inventory = Inventory()
+        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
 
-    def controls(self):
+    def controls(self, delta_time):
         keys = pygame.key.get_pressed()
         if self.timers[TimerObjects.WEAPON_USE.value].check_active(): return
+        
+        if keys[pygame.K_l] and InventoryGUI.inventory_triggered:
+            InventoryGUI.inventory_triggered = False
+
+        if InventoryGUI.inventory_triggered:
+            InventoryGUI.display_inventory(self.screen, self.inventory, delta_time) 
+            return
 
         # Vertical movements
         if keys[pygame.K_w]:
@@ -93,6 +103,10 @@ class Player(pygame.sprite.Sprite):
             # reset the direction when using a weapon and the player index
             self.direction = pygame.math.Vector2()
             self.player_frame = 0
+        
+        # inventory trigger
+        if keys[pygame.K_i]:
+            InventoryGUI.inventory_triggered = True
 
 
     def update_timers(self):
@@ -150,9 +164,10 @@ class Player(pygame.sprite.Sprite):
             self.movement_status = self.add_action_to_respected_status(self.selected_weapon)
 
     def update(self, delta_time):
-        self.controls()
+        self.controls(delta_time)
         self.move(delta_time)
         self.animate_character(delta_time)
         self.update_timers()
         self.check_idle_status()
+
 
