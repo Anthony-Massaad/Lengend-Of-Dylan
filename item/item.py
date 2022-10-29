@@ -8,7 +8,8 @@ class Item:
         self.name = name
         self.ability = ability
         self.description = description
-        self.import_image()
+        self.import_images()
+        self.scale_images()
         self.animation_frame = 0
         self.image = self.animation[self.animation_frame]
         self.rect = self.image.get_rect(topleft = (200, 200)) 
@@ -16,9 +17,13 @@ class Item:
     def check_equals(self, other_item):
         return self.name == other_item.name and self.ability == other_item.ability
     
-    def import_image(self):
+    def import_images(self):
         folder_path = f'graphics/items/{self.name}'
         self.animation = SupportFunctions.import_folder(folder_path)
+    
+    def scale_images(self):
+        for i, image in enumerate(self.animation):
+            self.animation[i] = pygame.transform.scale(image, (64, 64))
     
     def animate_item(self, delta_time):
         self.animation_frame += 4 * delta_time
