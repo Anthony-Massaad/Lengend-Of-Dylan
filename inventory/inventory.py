@@ -12,10 +12,11 @@ class Inventory:
         self.items[item] -= quantity
     
     def add_item(self, item, quantity):
+        """
         for inventory_item in self.items.keys():
             if inventory_item.check_equals(item):
                 self.add_to_item(inventory_item, quantity)
-                return
+                return"""
         self.items[item] = quantity
     
     def remove_item(self, item, quantity):

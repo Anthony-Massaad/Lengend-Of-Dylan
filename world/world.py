@@ -1,7 +1,7 @@
 import pygame 
 from constants import *
 from characters.player.player import Player
-from sprites.sprites import GenericSprites
+from sprites.sprites import GameObjects
 
 class RoomView(pygame.sprite.Group):
     def __init__(self):
@@ -30,7 +30,7 @@ class World:
         self.player = Player((GAME_WIDTH//2, GAME_WIDTH//2), self.all_sprites, self.display_surface)
         
         # room 
-        GenericSprites(
+        GameObjects(
             pos=(0, 0), 
             surface=pygame.transform.scale(pygame.image.load('graphics/room/room1.png').convert_alpha(), (GAME_WIDTH, GAME_HEIGHT)),
             groups=self.all_sprites,
