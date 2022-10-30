@@ -81,10 +81,10 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if self.timers[TimerObjects.WEAPON_USE.value].check_active(): return
         
+        # check inven active 
         if keys[pygame.K_l] and InventoryGUI.inventory_triggered:
             InventoryGUI.inventory_triggered = False
-
-        if InventoryGUI.inventory_triggered:
+        elif InventoryGUI.inventory_triggered:
             InventoryGUI.display_inventory(self.screen, self.inventory, delta_time) 
             return
 

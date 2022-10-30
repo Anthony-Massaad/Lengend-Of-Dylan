@@ -11,6 +11,9 @@ class ItemName(Enum):
     BEER = 'beer'
     WATER = 'water'
 
+class Font(Enum):
+    ARIAL = 'Arial'
+
 class Scaling(Enum):
     PLAYER_WIDTH = 24
     PLAYER_HEIGHT = 40
@@ -20,6 +23,8 @@ class Scaling(Enum):
 class Color(Enum):
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
+    RED = (255, 0, 0)
+    GREY = (168, 168, 168)
 
 class CharacterInfo(Enum):
     HEALTH = 'health'

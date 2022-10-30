@@ -12,9 +12,13 @@ class Item:
         self.import_images()
         self.scale_images()
         self.animation_frame = 0
+        self.frame = Color.BLACK.value
         self.image = self.animation[self.animation_frame]
         self.rect = self.image.get_rect(topleft = (INVEN_ITEM_BASE_X, INVEN_ITEM_BASE_Y)) 
     
+    def get_ability_attr(self, ability):
+        return self.ability[ability]
+
     def check_equals(self, other_item):
         return self.name == other_item.name and self.ability == other_item.ability
     
@@ -31,11 +35,19 @@ class Item:
         if self.animation_frame >= len(self.animation):
             self.animation_frame = 0
         self.image = self.animation[int(self.animation_frame)]
+    
+    def check_hover(self, mouse_x, mouse_y):
+        if self.rect.x <= mouse_x <= self.rect.x + self.rect.width:
+            if self.rect.y <= mouse_y <= self.rect.y + self.rect.height:
+                self.frame = Color.RED.value
+                return True
+        self.frame = Color.BLACK.value
+        return False
 
     def draw_item(self, screen, delta_time, x, y):
         self.animate_item(delta_time)
         self.rect.x, self.rect.y = x, y
-        pygame.draw.rect(screen, Color.BLACK.value, pygame.Rect(self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2, 2, 2, 2)
+        pygame.draw.rect(screen, self.frame, pygame.Rect(self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2, 2, 2, 2)
         screen.blit(self.image, self.rect)
 
         
