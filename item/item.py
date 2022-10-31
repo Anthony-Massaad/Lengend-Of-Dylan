@@ -15,15 +15,13 @@ class Item:
         self.frame = Color.BLACK.value
         self.image = self.animation[self.animation_frame]
         self.rect = self.image.get_rect(topleft = (INVEN_ITEM_BASE_X, INVEN_ITEM_BASE_Y)) 
-    
-    def get_ability_attr(self, ability):
-        return self.ability[ability]
+        self.hover_info = pygame.image.load(f'graphics/items/{self.name}/{self.name}_info.png').convert_alpha()
 
     def check_equals(self, other_item):
         return self.name == other_item.name and self.ability == other_item.ability
     
     def import_images(self):
-        folder_path = f'graphics/items/{self.name}'
+        folder_path = f'graphics/items/{self.name}/images'
         self.animation = SupportFunctions.import_folder(folder_path)
     
     def scale_images(self):
@@ -49,5 +47,8 @@ class Item:
         self.rect.x, self.rect.y = x, y
         pygame.draw.rect(screen, self.frame, pygame.Rect(self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2, 2, 2, 2)
         screen.blit(self.image, self.rect)
+    
+    def draw_hover_info(self, screen, x, y):
+        screen.blit(self.hover_info, (x, y))
 
         

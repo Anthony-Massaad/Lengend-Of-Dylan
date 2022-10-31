@@ -16,33 +16,11 @@ class InventoryImpl:
 
         return (INVEN_ITEM_BASE_X + 7) * col, INVEN_ITEM_BASE_Y * row, col, row
 
-    @classmethod
-    def render_item_info(cls, item_info, rect, font):
-        text = font.render(item_info, True, Color.BLACK.value)
-        text_rect = text.get_rect()
-        text_rect.center = rect.center
-        return text, text_rect
-
-    @classmethod
-    def display_item_info(cls, screen, item, mouse_x, mouse_y):
-        rect = pygame.Rect(mouse_x, mouse_y, 200, 100)
-        pygame.draw.rect(screen, Color.GREY.value, rect)
-        font = pygame.font.SysFont('Arial', 20)
-
-        health_value = item.get_ability_attr(CharacterInfo.HEALTH.value)
-        defense_value = item.get_ability_attr(CharacterInfo.DEFENSE.value)
-        stamina_value = item.get_ability_attr(CharacterInfo.STAMINA.value)
-        attack_value = item.get_ability_attr(CharacterInfo.ATTACK.value)
-
-        name, name_rect = cls.render_item_info(item.name, rect, font)
-        health, health_rect = cls.render_item_info(f'{CharacterInfo.HEALTH.value}: {health_value}', rect, font)
-
-        screen.blit(name, name_rect)
-        screen.blit(health, health_rect)
 
     @classmethod
     def display_inventory(cls, screen, inventory: Inventory, delta_time):
         cls.inventory_triggered = True
+        
         # TEMP, HAVE IT ALREADY DRAWN IN THE INVENTORY IMAGE THAT IS GOING TO BE DESIGNED
         # This is just general deisgn, add more styles to it. Border..etc
         pygame.draw.rect(screen, Color.WHITE.value, pygame.Rect(50,50, cls.INVENTORY_WINDOW_WIDTH, cls.INVENTORY_WINDOW_HEIGHT), 0, 2, 2, 2)
@@ -66,7 +44,7 @@ class InventoryImpl:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         for item in inventory_keys:
             if item.check_hover(mouse_x, mouse_y):
-                cls.display_item_info(screen, item, mouse_x, mouse_y)
+                item.draw_hover_info(screen, mouse_x, mouse_y)
         
 
 
