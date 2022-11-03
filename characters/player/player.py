@@ -4,7 +4,7 @@ from enum import Enum
 from util_timer.util_timer import Timer
 from inventory.inventory import Inventory
 from inventory.inventory_gui import InventoryGUI
-from constants import CharacterInfo, GAME_LAYERS, GameLayerKeys, ItemName
+from constants import CharacterInfo, ItemName, CollisionName
 from item.item import Item
 from item.item_data import ItemData
 
@@ -33,7 +33,7 @@ class TimerObjects(Enum):
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, position: tuple, group: pygame.sprite.Group, screen):
+    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites, screen):
         super().__init__(group)
         self.character_info = {
             CharacterInfo.HEALTH.value: 100, 
@@ -46,14 +46,15 @@ class Player(pygame.sprite.Sprite):
         self.movement_status = Movement.DOWN_IDLE.value
         self.player_frame = 0 
         self.screen = screen
+        self.game_obstacle_sprites = game_obstacle_sprites
         # image of the sprite (width, height)
         self.image = self.animations[self.movement_status][self.player_frame]
-        self.rect = self.image.get_rect(center = position)
-        self.z_index = GAME_LAYERS[GameLayerKeys.MAIN.value]
+        self.rect = self.image.get_rect(topleft = position)
+        self.hitbox = self.rect.inflate(0, -20)
         # vector direction as x = 0, y = 0
         self.direction = pygame.math.Vector2()
-        self.position = pygame.math.Vector2(self.rect.center)
-        self.speed = 200
+        self.position = pygame.math.Vector2(self.rect.topleft)
+        self.speed = 300
 
         self.timers = {
             TimerObjects.WEAPON_USE.value: Timer(350, self.use_weapon)
@@ -134,11 +135,40 @@ class Player(pygame.sprite.Sprite):
         
         # horizontal
         self.position.x += self.direction.x * self.speed * delta_time
-        self.rect.centerx = self.position.x
+        self.hitbox.x = self.position.x
+        self.collision(CollisionName.HORIZONTAL.value)
 
         # vertical
         self.position.y += self.direction.y * self.speed * delta_time
-        self.rect.centery = self.position.y
+        self.hitbox.y = self.position.y
+        self.collision(CollisionName.VERTICAL.value)
+        
+        self.rect.center = self.hitbox.center
+    
+    def collision(self, direction):
+        if direction == CollisionName.HORIZONTAL.value:
+            for sprite in self.game_obstacle_sprites:
+                if sprite.hitbox.colliderect(self.hitbox):
+                    # check right
+                    # move the overlap to the left side of the sprite
+                    if self.direction.x > 0:
+                        self.hitbox.right = sprite.hitbox.left
+                    # check left
+                    if self.direction.x < 0:
+                        self.hitbox.left = sprite.hitbox.right
+                    self.position.x = self.hitbox.x
+        
+        if direction == CollisionName.VERTICAL.value:
+            for sprite in self.game_obstacle_sprites:
+                if sprite.hitbox.colliderect(self.hitbox):
+                    # check down
+                    if self.direction.y > 0:
+                        self.hitbox.bottom = sprite.hitbox.top
+                    # check up 
+                    if self.direction.y < 0:
+                        self.hitbox.top = sprite.hitbox.bottom
+                    self.position.y = self.hitbox.y
+
     
     def import_graphics(self):
         # dictonary keys matches folder name
@@ -177,6 +207,7 @@ class Player(pygame.sprite.Sprite):
     def update(self, delta_time):
         self.controls(delta_time)
         self.move(delta_time)
+        # pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2)
         self.animate_character(delta_time)
         self.update_timers()
         self.check_idle_status()

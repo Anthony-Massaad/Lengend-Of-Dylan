@@ -1,6 +1,6 @@
 import pygame
 from support_functions.support_functions import SupportFunctions
-from constants import Color, Scaling, INVEN_ITEM_BASE_X, INVEN_ITEM_BASE_Y
+from constants import Color, INVEN_ITEM_BASE_X, INVEN_ITEM_BASE_Y
 
 class Item:
 
@@ -8,7 +8,7 @@ class Item:
         self.name = name
         self.ability = ability
         self.description = description
-        self.scale = (Scaling.ITEM_WIDTH.value, Scaling.ITEM_HEIGHT.value)
+        self.scale = (32, 32)
         self.import_images()
         self.scale_images()
         self.animation_frame = 0

@@ -1,7 +1,7 @@
 from turtle import width
 import pygame
 from inventory.inventory import Inventory
-from constants import GAME_WIDTH, GAME_HEIGHT, Color, Scaling, INVEN_ITEM_BASE_X, INVEN_ITEM_BASE_Y, CharacterInfo
+from constants import GAME_WIDTH, GAME_HEIGHT, Color, INVEN_ITEM_BASE_X, INVEN_ITEM_BASE_Y, CharacterInfo
 
 class InventoryImpl:
     INVENTORY_WINDOW_DIFF = 100
@@ -10,7 +10,7 @@ class InventoryImpl:
     @classmethod
     def get_item_pos(cls, col, row, line_width):
         col += 1
-        if (col * INVEN_ITEM_BASE_X) + Scaling.ITEM_WIDTH.value >= line_width:
+        if (col * INVEN_ITEM_BASE_X) + 32 >= line_width:
             row += 1
             col = 1
 

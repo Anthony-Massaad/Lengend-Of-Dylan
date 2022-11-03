@@ -1,6 +1,7 @@
 import pygame
 import sys
 from constants import *
+from constants.game_data import starting_terrain
 from world.world import World
 
 class Game:
@@ -12,7 +13,7 @@ class Game:
         self.display = pygame.display.set_mode((GAME_WIDTH + 1, GAME_HEIGHT + 1))
         pygame.display.set_caption('Legend of Dylan')
         self.clock = pygame.time.Clock()
-        self.world = World()
+        self.world = World(starting_terrain)
     
     def run(self) -> None:
         """

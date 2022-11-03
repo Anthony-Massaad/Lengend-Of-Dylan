@@ -1,9 +1,10 @@
 from enum import Enum
 
-GAME_WIDTH = GAME_HEIGHT = 595 
+GAME_WIDTH = GAME_HEIGHT = 900
 
 INVEN_ITEM_BASE_X = 75 
 INVEN_ITEM_BASE_Y = 75
+TILE_SIZE = 64
 
 # SQUARE_DISTANCE = GAME_WIDTH // 17
 
@@ -13,12 +14,6 @@ class ItemName(Enum):
 
 class Font(Enum):
     ARIAL = 'Arial'
-
-class Scaling(Enum):
-    PLAYER_WIDTH = 24
-    PLAYER_HEIGHT = 40
-    ITEM_WIDTH = 32
-    ITEM_HEIGHT = 32
 
 class Color(Enum):
     BLACK = (0, 0, 0)
@@ -32,13 +27,6 @@ class CharacterInfo(Enum):
     DEFENSE = 'defense'
     ATTACK = 'attack' 
 
-class GameLayerKeys(Enum):
-    GROUND = 'ground'
-    PLANT = 'plant'
-    MAIN = 'main'
-
-GAME_LAYERS = {
-    GameLayerKeys.GROUND.value: 1,
-    GameLayerKeys.PLANT.value: 6,
-    GameLayerKeys.MAIN.value: 7,
-}
+class CollisionName(Enum):
+    HORIZONTAL = 'horizontal'
+    VERTICAL = 'vertical'
