@@ -3,6 +3,7 @@ import sys
 from constants import *
 from constants.game_data import starting_terrain
 from world.world import World
+from logger.log import Log
 
 class Game:
 
@@ -19,6 +20,7 @@ class Game:
         """
             Main game loop
         """
+        Log.info("Game launched")
         while True: 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

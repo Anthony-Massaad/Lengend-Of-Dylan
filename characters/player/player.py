@@ -33,7 +33,7 @@ class TimerObjects(Enum):
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites, screen):
+    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group, screen: pygame.surface.Surface):
         super().__init__(group)
         self.character_info = {
             CharacterInfo.HEALTH.value: 100, 
@@ -78,7 +78,7 @@ class Player(pygame.sprite.Sprite):
         self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
 
 
-    def controls(self, delta_time):
+    def controls(self, delta_time: float):
         keys = pygame.key.get_pressed()
         if self.timers[TimerObjects.WEAPON_USE.value].check_active(): return
         
@@ -128,7 +128,7 @@ class Player(pygame.sprite.Sprite):
     def use_weapon(self):
         print("using weapon")
 
-    def move(self, delta_time):
+    def move(self, delta_time: float):
         # default the vector so diagonal is the same
         if self.direction.magnitude() > 0:
             self.direction = self.direction.normalize()
@@ -145,7 +145,7 @@ class Player(pygame.sprite.Sprite):
         
         self.rect.center = self.hitbox.center
     
-    def collision(self, direction):
+    def collision(self, direction: str):
         if direction == CollisionName.HORIZONTAL.value:
             for sprite in self.game_obstacle_sprites:
                 if sprite.hitbox.colliderect(self.hitbox):
@@ -183,7 +183,7 @@ class Player(pygame.sprite.Sprite):
             animation_path = general_path + animation_key
             self.animations[animation_key] = SupportFunctions.import_folder(animation_path)
     
-    def animate_character(self, delta_time):
+    def animate_character(self, delta_time: float):
         if self.timers[TimerObjects.WEAPON_USE.value].check_active():
             self.player_frame += 12 * delta_time
         else:
@@ -193,7 +193,7 @@ class Player(pygame.sprite.Sprite):
             self.player_frame = 0
         self.image = self.animations[self.movement_status][int(self.player_frame)]
     
-    def add_action_to_respected_status(self, action):
+    def add_action_to_respected_status(self, action: str):
         return self.movement_status.split('_')[0] + action
 
     def check_idle_status(self):
@@ -204,7 +204,7 @@ class Player(pygame.sprite.Sprite):
         if self.timers[TimerObjects.WEAPON_USE.value].check_active():
             self.movement_status = self.add_action_to_respected_status(self.selected_weapon)
 
-    def update(self, delta_time):
+    def update(self, delta_time: float):
         self.controls(delta_time)
         self.move(delta_time)
         # pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2)

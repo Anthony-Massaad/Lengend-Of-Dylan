@@ -4,11 +4,21 @@ from constants import TILE_SIZE
 from csv import reader
 
 class SupportFunctions:
-
+    """Class for all support functions used around the game
+    """
     @classmethod
-    def import_csv_layout(cls, path):
+    def import_csv_layout(cls, path: str) -> list:
+        """Given the path of a csv file, import the layout into a list and return it.
+        The layout consist of integers, where anything that is not -1 is the object. 
+
+        Args:
+            path (str): path of the csv file
+
+        Returns:
+            list: list of the csv layout
+        """
         layout_map = []
-        # -1 no tile, 395 there is a bound for the player
+        # -1 no tile, any other number there is something
         with open(path) as map:
             layout = reader(map, delimiter=',')
             for row in layout:
