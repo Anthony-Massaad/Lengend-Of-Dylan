@@ -21,7 +21,7 @@ class RoomView(pygame.sprite.Group):
         self.ground_rect = self.ground.get_rect(topleft=(0, 0))
 
 
-    def draw_room(self, player: Player) -> None:
+    def draw_room(self, player: Player, fps: str) -> None:
         """draw the game room with all the sprites
 
         Args:
@@ -41,6 +41,8 @@ class RoomView(pygame.sprite.Group):
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
             offset = sprite.rect.topleft - self.view_offset
             self.display_surface.blit(sprite.image, offset)
+
+        self.display_surface.blit(fps, (10, 0))
 
 
 class World:
@@ -87,7 +89,7 @@ class World:
         Log.info("game setup complete")
         
 
-    def run(self, delta_time: float) -> None:
+    def run(self, delta_time: float, fps: str) -> None:
         """generate the world sprites
 
         Args:
@@ -97,4 +99,4 @@ class World:
         self.display_surface.fill(Color.BLACK.value)
         #self.visible_sprites.draw(self.display_surface)
         self.visible_sprites.update(delta_time)
-        self.visible_sprites.draw_room(self.player)
+        self.visible_sprites.draw_room(self.player, fps)

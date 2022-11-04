@@ -24,7 +24,6 @@ class Game:
     def draw_fps(self):
         fps = f'FPS: {int(self.clock.get_fps())}'
         fps_text = self.basic_font.render(fps, 1, Color.BLACK.value)
-        self.display.blit(fps_text, (10, 0))
         return fps_text
 
     def run(self) -> None:
@@ -48,8 +47,7 @@ class Game:
             # so, regardless of the fps, the game will be executed at the same speed.
             delta_time = self.clock.tick() / 1000
             # print(delta_time)
-            self.world.run(delta_time)
-            self.draw_fps()
+            self.world.run(delta_time, self.draw_fps())
             pygame.display.update()
 
 

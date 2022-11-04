@@ -66,16 +66,6 @@ class Player(pygame.sprite.Sprite):
         # inventory
         self.inventory = Inventory()
         self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
-        self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
 
 
     def controls(self, delta_time: float):
