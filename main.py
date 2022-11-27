@@ -11,11 +11,7 @@ class Game:
         """Game initialization and setup
         """
         pygame.init()
-        info = pygame.display.Info()
-        w = info.current_w
-        h = info.current_h
-
-        self.display = pygame.display.set_mode((w, h), pygame.FULLSCREEN)
+        self.display = pygame.display.set_mode((GAME_WIDTH, GAME_HEIGHT))
         pygame.display.set_caption('Legend of Dylan')
         self.basic_font = pygame.font.SysFont("Arial", 20)
         self.clock = pygame.time.Clock()
@@ -24,6 +20,7 @@ class Game:
     def draw_fps(self):
         fps = f'FPS: {int(self.clock.get_fps())}'
         fps_text = self.basic_font.render(fps, 1, Color.BLACK.value)
+        Log.debug(fps)
         return fps_text
 
     def run(self) -> None:
@@ -47,7 +44,8 @@ class Game:
             # so, regardless of the fps, the game will be executed at the same speed.
             delta_time = self.clock.tick() / 1000
             # print(delta_time)
-            self.world.run(delta_time, self.draw_fps())
+            self.world.run(delta_time)
+            self.display.blit(self.draw_fps(), (10, 0))
             pygame.display.update()
 
 

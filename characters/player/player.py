@@ -7,29 +7,27 @@ from inventory.inventory_gui import InventoryGUI
 from constants import CharacterInfo, ItemName, CollisionName
 from item.item import Item
 from item.item_data import ItemData
+from logger.log import Log
 
 # Class constans for all the player movements. Name is relative to the folder directory 
 class Movement(Enum):
     UP = 'up'
     UP_IDLE = "up_idle"
-    UP_SWING = "up_swing"
+    UP_SWORD_SWING = "up_sword_swing"
     DOWN = 'down'
     DOWN_IDLE = 'down_idle'
-    DOWN_SWING = "down_swing"
+    DOWN_SWORD_SWING = "down_sword_swing"
     LEFT = 'left'
     LEFT_IDLE = 'left_idle'
-    LEFT_SWING = "left_swing"
+    LEFT_SWORD_SWING = "left_sword_swing"
     RIGHT = 'right'
     RIGHT_IDLE = 'right_idle'
-    RIGHT_SWING = "right_swing"
+    RIGHT_SWORD_SWING = "right_sword_swing"
 
 # Class constant for all the player weapon animations. Name is relative to the folder directory 
 class Weapon(Enum):
-    SWORD = '_swing'
+    SWORD = 'sword'
 
-# Class constants for all ther player abilities linked to the Timer
-class TimerObjects(Enum):
-    WEAPON_USE = 'use weapon'
 
 class Player(pygame.sprite.Sprite):
 
@@ -41,6 +39,12 @@ class Player(pygame.sprite.Sprite):
             CharacterInfo.ATTACK.value: 10,
             CharacterInfo.STAMINA.value: 100
         }
+
+        # TEMP 
+        self.hit_time = {
+            Weapon.SWORD.value: 0 
+        }
+
         # get the basic graphics of the player
         self.import_graphics()
         self.movement_status = Movement.DOWN_IDLE.value
@@ -56,12 +60,14 @@ class Player(pygame.sprite.Sprite):
         self.position = pygame.math.Vector2(self.rect.topleft)
         self.speed = 300
 
-        self.timers = {
-            TimerObjects.WEAPON_USE.value: Timer(350, self.use_weapon)
+        self.action_timers = {
+            Weapon.SWORD.value: Timer(350, self.use_weapon)
         }
 
         # Player utilties
         self.selected_weapon = Weapon.SWORD.value
+
+        self.selected_magic = None
 
         # inventory
         self.inventory = Inventory()
@@ -70,7 +76,7 @@ class Player(pygame.sprite.Sprite):
 
     def controls(self, delta_time: float):
         keys = pygame.key.get_pressed()
-        if self.timers[TimerObjects.WEAPON_USE.value].check_active(): return
+        if self.action_timers[self.selected_weapon].check_active(): return
         
         # check inven active 
         if keys[pygame.K_l] and InventoryGUI.inventory_triggered:
@@ -101,22 +107,34 @@ class Player(pygame.sprite.Sprite):
         
         # weapon 
         if keys[pygame.K_k]:
-            self.timers[TimerObjects.WEAPON_USE.value].start_timer()
+            self.action_timers[Weapon.SWORD.value].start_timer()
             # reset the direction when using a weapon and the player index
             self.direction = pygame.math.Vector2()
             self.player_frame = 0
         
         # inventory trigger
         if keys[pygame.K_i]:
-            InventoryGUI.inventory_triggered = True
+            print("magic_triggered")
 
 
-    def update_timers(self):
-        for timer in self.timers.values():
-            timer.update()
+    def update_timer(self):
+        self.action_timers[self.selected_weapon].update(self.hit_time[self.selected_weapon], int(self.player_frame))
 
     def use_weapon(self):
-        print("using weapon")
+        direction = self.movement_status.split('_')[0]
+        Log.info(f"Direction of attack is {direction}")
+
+        if direction == Movement.RIGHT.value:
+            ...
+        elif direction == Movement.LEFT.value:
+            ...
+        elif direction == Movement.DOWN.value:
+            print(self.hitbox.y)
+            pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(self.hitbox.x, self.hitbox.y+64, 64, 64))
+
+        elif direction == Movement.UP.value:
+            ...
+
 
     def move(self, delta_time: float):
         # default the vector so diagonal is the same
@@ -163,10 +181,10 @@ class Player(pygame.sprite.Sprite):
     def import_graphics(self):
         # dictonary keys matches folder name
         self.animations = {
-            Movement.UP.value: [], Movement.UP_IDLE.value: [], Movement.UP_SWING.value: [], 
-            Movement.DOWN.value: [], Movement.DOWN_IDLE.value: [], Movement.DOWN_SWING.value: [],
-            Movement.LEFT.value: [], Movement.LEFT_IDLE.value: [], Movement.LEFT_SWING.value: [],
-            Movement.RIGHT.value: [], Movement.RIGHT_IDLE.value: [], Movement.RIGHT_SWING.value: [],
+            Movement.UP.value: [], Movement.UP_IDLE.value: [], Movement.UP_SWORD_SWING.value: [], 
+            Movement.DOWN.value: [], Movement.DOWN_IDLE.value: [], Movement.DOWN_SWORD_SWING.value: [],
+            Movement.LEFT.value: [], Movement.LEFT_IDLE.value: [], Movement.LEFT_SWORD_SWING.value: [],
+            Movement.RIGHT.value: [], Movement.RIGHT_IDLE.value: [], Movement.RIGHT_SWORD_SWING.value: [],
         }
         general_path = 'graphics/character/'
         for animation_key in self.animations.keys():
@@ -174,8 +192,9 @@ class Player(pygame.sprite.Sprite):
             self.animations[animation_key] = SupportFunctions.import_folder(animation_path)
     
     def animate_character(self, delta_time: float):
-        if self.timers[TimerObjects.WEAPON_USE.value].check_active():
+        if self.action_timers[self.selected_weapon].check_active():
             self.player_frame += 12 * delta_time
+            Log.debug(f"Player frame on hit {int(self.player_frame)}")
         else:
             self.player_frame += 4 * delta_time
 
@@ -191,15 +210,15 @@ class Player(pygame.sprite.Sprite):
         if self.direction.magnitude() == 0:
             self.movement_status = self.add_action_to_respected_status("_idle")
         
-        if self.timers[TimerObjects.WEAPON_USE.value].check_active():
-            self.movement_status = self.add_action_to_respected_status(self.selected_weapon)
+        if self.action_timers[Weapon.SWORD.value].check_active():
+            self.movement_status = self.add_action_to_respected_status(f'_{self.selected_weapon}_swing')
 
     def update(self, delta_time: float):
         self.controls(delta_time)
         self.move(delta_time)
         # pygame.draw.rect(self.screen, (255,0,0), pygame.Rect(self.rect.x, self.rect.y, self.rect.width, self.rect.height), 2)
         self.animate_character(delta_time)
-        self.update_timers()
+        self.update_timer()
         self.check_idle_status()
 
 

@@ -1,4 +1,5 @@
 import pygame
+from logger.log import Log
 
 class Timer:
 
@@ -51,15 +52,20 @@ class Timer:
         self.active = self.trigger_active()
         self.start_time = 0
 
-    def update(self) -> None: 
+    def update(self, hit_frame, current_frame) -> None: 
         """update the Timer, checking if it passed the duration given
         If so, stop the timer and launch the method if given
         """
         if not self.active: return
+
+        if hit_frame == current_frame:
+            Log.info(f"Hitting at frame {hit_frame} with {current_frame}")
+            if self.function:
+                self.function()
+
         current_time = self.get_pygame_time()
         if current_time - self.start_time >= self.duration:
             self.stop_timer()
-            if self.function:
-                self.function()
+            Log.info(f"Timer stopped")
                 
             
