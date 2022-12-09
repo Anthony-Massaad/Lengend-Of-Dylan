@@ -1,5 +1,5 @@
 import pygame
-from constants import CharacterInfo, Font, FontSize, Color
+from constants import CharacterInfo, Font, FontSize, Color, GAME_HEIGHT
 from enum import Enum
 
 
@@ -11,6 +11,7 @@ class UISettings(Enum):
     UI_BACKGROUND_COLOR = (34, 34, 34)
     UI_BORDER_COLOR = (17, 17, 17)
     HEALTH_BAR_Y = 10
+    UTIL_BOX_SIZE = 80
 
 
 class UserInterface:
@@ -44,8 +45,15 @@ class UserInterface:
         # drawing the border
         pygame.draw.rect(self.screen, UISettings.UI_BORDER_COLOR.value, rect, 3)
 
+    def draw_utils(self, x, y):
+        rect = pygame.Rect(x, y, UISettings.UTIL_BOX_SIZE.value, UISettings.UTIL_BOX_SIZE.value)
+        pygame.draw.rect(self.screen, UISettings.UI_BACKGROUND_COLOR.value, rect)
+        pygame.draw.rect(self.screen, UISettings.UI_BORDER_COLOR.value, rect, 3)
+
     def draw(self, player):
         self.draw_bar(player.current_stats[CharacterInfo.HEALTH.value], player.max_stats[CharacterInfo.HEALTH.value], self.health_bar, Color.GREEN.value, True)
         self.draw_bar(player.current_stats[CharacterInfo.MANA.value], player.max_stats[CharacterInfo.MANA.value], self.mana_bar, Color.BLUE.value, False)
+        self.draw_utils(10, GAME_HEIGHT - 90)
+        self.draw_utils(75, GAME_HEIGHT - 85)
         # pygame.draw.rect(self.screen, Color.RED.value, self.health_bar)
         # pygame.draw.rect(self.screen, Color.BLUE.value, self.mana_bar)
