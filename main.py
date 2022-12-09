@@ -45,7 +45,7 @@ class Game:
             delta_time = self.clock.tick() / 1000
             # print(delta_time)
             self.world.run(delta_time)
-            self.display.blit(self.draw_fps(), (10, 0))
+            self.display.blit(self.draw_fps(), (GAME_WIDTH - 100, 0))
             pygame.display.update()
 
 

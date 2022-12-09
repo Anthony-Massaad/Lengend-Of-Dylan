@@ -33,11 +33,17 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group, screen: pygame.surface.Surface):
         super().__init__(group)
-        self.character_info = {
-            CharacterInfo.HEALTH.value: 100, 
+        # Player status
+        self.current_stats = {
+            CharacterInfo.HEALTH.value: 100,
             CharacterInfo.DEFENSE.value: 25,
             CharacterInfo.ATTACK.value: 10,
-            CharacterInfo.STAMINA.value: 100
+            CharacterInfo.MANA.value: 100
+        }
+
+        self.max_stats = {
+            CharacterInfo.HEALTH.value: 100,
+            CharacterInfo.MANA.value: 100
         }
 
         # TEMP 

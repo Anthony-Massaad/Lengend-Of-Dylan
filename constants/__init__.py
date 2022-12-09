@@ -14,16 +14,23 @@ class ItemName(Enum):
 
 class Font(Enum):
     ARIAL = 'Arial'
+class FontSize(Enum):
+    size_18 = 18
 
 class Color(Enum):
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     RED = (255, 0, 0)
+    DARK_RED = (84, 0, 0)
+    BLUE = (0, 0, 255)
+    GREEN = (0, 255, 0)
+    ORANGE = (252, 163, 0)
     GREY = (168, 168, 168)
+    GOLD = "gold"
 
 class CharacterInfo(Enum):
     HEALTH = 'health'
-    STAMINA = 'stamina'
+    MANA = 'mana'
     DEFENSE = 'defense'
     ATTACK = 'attack' 
 

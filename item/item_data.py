@@ -8,7 +8,7 @@ class ItemData:
             CharacterInfo.HEALTH.value: health, 
             CharacterInfo.DEFENSE.value: defense,
             CharacterInfo.ATTACK.value: attack,
-            CharacterInfo.STAMINA.value: stamina
+            CharacterInfo.MANA.value: stamina
         }
     
     @classmethod
