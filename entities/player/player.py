@@ -2,7 +2,7 @@ from enum import Enum
 
 import pygame
 
-from constants import CharacterInfo, ItemName, CollisionName, PlayerWeapons
+from constants import CharacterInfo, ItemName, CollisionName, PlayerWeapons, PlayerMagics
 from inventory.inventory import Inventory
 from item.item import Item
 from item.item_data import ItemData
@@ -78,11 +78,20 @@ class Player(pygame.sprite.Sprite):
         self.selected_weapon = self.weapons[self.weapon_index]
         self.weapon_switch_timer = Timer(200, lambda direction: self.switch_weapon(direction))
         Log.info(f"Player weapons list: {self.weapons}")
-
-        # weapon timers
+        # Player Magic
+        self.magic_index = 0
+        self.magics = []
+        for magic in PlayerMagics:
+            self.magics.append(magic.value)
+        Log.info(f"Player Magics List: {self.magics}")
+        self.selected_magic = self.magics[self.magic_index]
+        self.magic_switch_timer = Timer(200, lambda direction: self.switch_magic(direction))
+        # utils timer
         self.weapon_timer = {
-            PlayerWeapons.SWORD.value: Timer(350, self.use_weapon)
+            PlayerWeapons.SWORD.value: Timer(350, self.use_weapon),
+            PlayerMagics.FLAME.value: Timer(100, self.use_magic)
         }
+        ### END OF UTILS ###
 
         # inventory
         self.inventory = Inventory()
@@ -127,6 +136,10 @@ class Player(pygame.sprite.Sprite):
             self.direction = pygame.math.Vector2()
             self.player_frame = 0
 
+        # magic invoked
+        if keys[pygame.K_i]:
+            Log.info("Player Magic invoked")
+
         # Switching weapons
         if keys[pygame.K_l] and not self.weapon_switch_timer.active:
             Log.info(f"Player weapon switching invoked forward")
@@ -138,13 +151,38 @@ class Player(pygame.sprite.Sprite):
             self.weapon_switch_timer.start_timer()
             self.util_switch_direction = -1
 
+        # Switching magic
+        if keys[pygame.K_o] and not self.magic_switch_timer.active:
+            Log.info(f"Player magic switching invoked forward")
+            self.magic_switch_timer.start_timer()
+            self.util_switch_direction = 1
+
+        if keys[pygame.K_u] and not self.magic_switch_timer.active:
+            Log.info(f"Player magic switching invoked backward")
+            self.magic_switch_timer.start_timer()
+            self.util_switch_direction = -1
+
         # # inventory trigger
         # if keys[pygame.K_i]:
         #     self.weapon_switch_timer.switch_util()
         #     print("magic_triggered")
 
-    def update_timer(self):
+    def update_timers(self):
         self.weapon_timer[self.selected_weapon].use_util()
+        self.weapon_switch_timer.switch_util(self.util_switch_direction)
+        self.magic_switch_timer.switch_util(self.util_switch_direction)
+
+    def switch_magic(self, direction):
+        Log.info(f"Weapon switch direction {direction}")
+        self.magic_index += direction
+        if self.magic_index >= len(self.magics):
+            self.magic_index = 0
+        if self.magic_index < 0:
+            self.magic_index = len(self.magics) - 1
+        Log.info(f"Current weapon is {self.magics[self.magic_index]}")
+
+    def use_magic(self):
+        ...
 
     def switch_weapon(self, direction):
         Log.info(f"Weapon switch direction {direction}")
@@ -240,7 +278,6 @@ class Player(pygame.sprite.Sprite):
         self.controls()
         self.move(delta_time)
         self.animate_character(delta_time)
-        self.update_timer()
+        self.update_timers()
         self.check_idle_status()
         # weapon switching
-        self.weapon_switch_timer.switch_util(self.util_switch_direction)
