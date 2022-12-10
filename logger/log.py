@@ -1,5 +1,6 @@
 from ordered_enum import OrderedEnum
 
+
 class LogLevels(OrderedEnum):
     """Inherits from OrderedEnum to order the Loglevels 
     from lowest to highest precedence
@@ -14,6 +15,7 @@ class LogLevels(OrderedEnum):
     INFO = 'info'
     WARNING = 'warning'
     ERROR = 'error'
+
 
 class Log:
     """Logger class to print messages based off the log level set
@@ -46,7 +48,7 @@ class Log:
         """
         if cls.log_level <= LogLevels.DEBUG:
             cls.print_console(f'[DEBUG] {msg}')
-    
+
     @classmethod
     def info(cls, msg: str) -> None:
         """print info messages is the log level is equal or lower to itself 
@@ -56,7 +58,7 @@ class Log:
         """
         if cls.log_level <= LogLevels.INFO:
             cls.print_console(f'[INFO] {msg}')
-    
+
     @classmethod
     def warning(cls, msg: str) -> None:
         """print warning messages is the log level is equal or lower to itself 

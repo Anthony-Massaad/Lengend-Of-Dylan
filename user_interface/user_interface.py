@@ -1,6 +1,8 @@
-import pygame
-from constants import CharacterInfo, Font, FontSize, Color, GAME_HEIGHT, weapon_images_path, PlayerWeapons
 from enum import Enum
+
+import pygame
+
+from constants import CharacterInfo, Font, FontSize, Color, GAME_HEIGHT, weapon_images_path, PlayerWeapons
 
 
 class UISettings(Enum):
@@ -22,8 +24,10 @@ class UserInterface:
         self.font = pygame.font.SysFont(Font.ARIAL.value, FontSize.size_18.value)
 
         # bars
-        self.health_bar = pygame.Rect(10, UISettings.HEALTH_BAR_Y.value, UISettings.HEALTH_WIDTH.value, UISettings.BAR_HEIGHT.value)
-        self.mana_bar = pygame.Rect(10, UISettings.HEALTH_BAR_Y.value + UISettings.BAR_HEIGHT.value + 1, UISettings.MANA_WIDTH.value, UISettings.BAR_HEIGHT.value)
+        self.health_bar = pygame.Rect(10, UISettings.HEALTH_BAR_Y.value, UISettings.HEALTH_WIDTH.value,
+                                      UISettings.BAR_HEIGHT.value)
+        self.mana_bar = pygame.Rect(10, UISettings.HEALTH_BAR_Y.value + UISettings.BAR_HEIGHT.value + 1,
+                                    UISettings.MANA_WIDTH.value, UISettings.BAR_HEIGHT.value)
 
         # graphics for the player weapons
         self.weapon_images = []
@@ -67,8 +71,10 @@ class UserInterface:
         self.screen.blit(weapon_image, weapon_image.get_rect(center=rect.center))
 
     def draw(self, player):
-        self.draw_bar(player.current_stats[CharacterInfo.HEALTH.value], player.max_stats[CharacterInfo.HEALTH.value], self.health_bar, Color.GREEN.value, True)
-        self.draw_bar(player.current_stats[CharacterInfo.MANA.value], player.max_stats[CharacterInfo.MANA.value], self.mana_bar, Color.BLUE.value, False)
+        self.draw_bar(player.current_stats[CharacterInfo.HEALTH.value], player.max_stats[CharacterInfo.HEALTH.value],
+                      self.health_bar, Color.GREEN.value, True)
+        self.draw_bar(player.current_stats[CharacterInfo.MANA.value], player.max_stats[CharacterInfo.MANA.value],
+                      self.mana_bar, Color.BLUE.value, False)
         # self.draw_utils(10, GAME_HEIGHT - 90)
 
         self.weapon_ui(player.weapon_index, player.weapon_switch_timer.check_active())

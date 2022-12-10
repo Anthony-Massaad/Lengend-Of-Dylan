@@ -1,9 +1,12 @@
-import pygame
 import sys
+
+import pygame
+
 from constants import *
 from constants.game_data import starting_terrain
-from world.world import World
 from logger.log import Log
+from world.world import World
+
 
 class Game:
 
@@ -16,7 +19,7 @@ class Game:
         self.basic_font = pygame.font.SysFont("Arial", 20)
         self.clock = pygame.time.Clock()
         self.world = World(starting_terrain)
-    
+
     def draw_fps(self):
         fps = f'FPS: {int(self.clock.get_fps())}'
         fps_text = self.basic_font.render(fps, 1, Color.BLACK.value)
@@ -28,7 +31,7 @@ class Game:
             Main game loop
         """
         Log.info("Game launched")
-        while True: 
+        while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     Log.info("Exiting game")
@@ -39,7 +42,7 @@ class Game:
                         Log.info("Exiting game")
                         pygame.quit()
                         sys.exit()
-            
+
             # delta time needed to make everything frame rate independent 
             # so, regardless of the fps, the game will be executed at the same speed.
             delta_time = self.clock.tick() / 1000

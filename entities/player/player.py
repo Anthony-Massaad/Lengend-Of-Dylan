@@ -1,15 +1,17 @@
-import pygame
-from support_functions.support_functions import SupportFunctions
 from enum import Enum
-from timer.timer import Timer
-from inventory.inventory import Inventory
-from inventory.inventory_gui import InventoryGUI
+
+import pygame
+
 from constants import CharacterInfo, ItemName, CollisionName, PlayerWeapons
+from inventory.inventory import Inventory
 from item.item import Item
 from item.item_data import ItemData
 from logger.log import Log
+from support_functions.support_functions import SupportFunctions
+from timer.timer import Timer
 
-# Class constans for all the player movements. Name is relative to the folder directory 
+
+# Class constans for all the player movements. Name is relative to the folder directory
 class Movement(Enum):
     UP = 'up'
     UP_IDLE = "up_idle"
@@ -24,11 +26,13 @@ class Movement(Enum):
     RIGHT_IDLE = 'right_idle'
     RIGHT_SWORD_SWING = "right_sword_swing"
 
-# Class constant for all the player weapon animations. Name is relative to the folder directory 
+
+# Class constant for all the player weapon animations. Name is relative to the folder directory
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group, screen: pygame.surface.Surface):
+    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group,
+                 screen: pygame.surface.Surface):
         super().__init__(group)
         # Player status
         self.current_stats = {
@@ -50,7 +54,7 @@ class Player(pygame.sprite.Sprite):
         Log.info(f"Player Animations dictionary is {self.animations}")
         self.import_graphics()
         self.movement_status = Movement.DOWN_IDLE.value
-        self.player_frame = 0 
+        self.player_frame = 0
         self.screen = screen
         self.game_obstacle_sprites = game_obstacle_sprites
 
@@ -112,9 +116,9 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_a]:
             self.direction.x = -1
             self.movement_status = Movement.LEFT.value
-        else: 
+        else:
             self.direction.x = 0
-        
+
         # weapon invoked
         if keys[pygame.K_k]:
             Log.info("Player attack invoked")
@@ -134,8 +138,6 @@ class Player(pygame.sprite.Sprite):
             self.weapon_switch_timer.start_timer()
             self.util_switch_direction = -1
 
-
-        
         # # inventory trigger
         # if keys[pygame.K_i]:
         #     self.weapon_switch_timer.switch_util()
@@ -165,12 +167,11 @@ class Player(pygame.sprite.Sprite):
         elif direction == Movement.UP.value:
             ...
 
-
     def move(self, delta_time: float):
         # default the vector so diagonal is the same
         if self.direction.magnitude() > 0:
             self.direction = self.direction.normalize()
-        
+
         # horizontal
         self.position.x += self.direction.x * self.speed * delta_time
         self.hitbox.x = self.position.x
@@ -180,9 +181,9 @@ class Player(pygame.sprite.Sprite):
         self.position.y += self.direction.y * self.speed * delta_time
         self.hitbox.y = self.position.y
         self.collision(CollisionName.VERTICAL.value)
-        
+
         self.rect.center = self.hitbox.center
-    
+
     def collision(self, direction: str):
         if direction == CollisionName.HORIZONTAL.value:
             for sprite in self.game_obstacle_sprites:
@@ -195,7 +196,7 @@ class Player(pygame.sprite.Sprite):
                     if self.direction.x < 0:
                         self.hitbox.left = sprite.hitbox.right
                     self.position.x = self.hitbox.x
-        
+
         if direction == CollisionName.VERTICAL.value:
             for sprite in self.game_obstacle_sprites:
                 if sprite.hitbox.colliderect(self.hitbox):
@@ -207,13 +208,12 @@ class Player(pygame.sprite.Sprite):
                         self.hitbox.top = sprite.hitbox.bottom
                     self.position.y = self.hitbox.y
 
-    
     def import_graphics(self):
         general_path = 'graphics/character/'
         for animation_key in self.animations.keys():
             animation_path = general_path + animation_key
             self.animations[animation_key] = SupportFunctions.import_folder(animation_path)
-    
+
     def animate_character(self, delta_time: float):
         if self.weapon_timer[self.selected_weapon].check_active():
             self.player_frame += 12 * delta_time
@@ -224,7 +224,7 @@ class Player(pygame.sprite.Sprite):
         if self.player_frame >= len(self.animations[self.movement_status]):
             self.player_frame = 0
         self.image = self.animations[self.movement_status][int(self.player_frame)]
-    
+
     def add_action_to_respected_status(self, action: str):
         return self.movement_status.split('_')[0] + action
 
@@ -232,7 +232,7 @@ class Player(pygame.sprite.Sprite):
         # if the player is not moving, add the idle
         if self.direction.magnitude() == 0:
             self.movement_status = self.add_action_to_respected_status("_idle")
-        
+
         if self.weapon_timer[PlayerWeapons.SWORD.value].check_active():
             self.movement_status = self.add_action_to_respected_status(f'_{self.selected_weapon}_swing')
 
@@ -244,5 +244,3 @@ class Player(pygame.sprite.Sprite):
         self.check_idle_status()
         # weapon switching
         self.weapon_switch_timer.switch_util(self.util_switch_direction)
-
-

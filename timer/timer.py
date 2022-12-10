@@ -1,5 +1,7 @@
 import pygame
+
 from logger.log import Log
+
 
 class Timer:
 
@@ -34,7 +36,7 @@ class Timer:
 
     def trigger_switch_util(self):
         return not self._switch_util
-    
+
     def check_active(self) -> bool:
         """check the Timer status 
 
@@ -51,7 +53,7 @@ class Timer:
         self.start_time = self.get_pygame_time()
         # Won't matter if we are hitting.
         self._switch_util = self.trigger_switch_util()
-    
+
     def stop_timer(self) -> None:
         """when Timer is done, resets its configurations
         """
@@ -82,5 +84,3 @@ class Timer:
             if self.function:
                 self.function()
             Log.info(f"Timer stopped")
-                
-            

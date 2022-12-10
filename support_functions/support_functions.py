@@ -1,11 +1,15 @@
-from os import walk
-import pygame
-from constants import TILE_SIZE
 from csv import reader
+from os import walk
+
+import pygame
+
+from constants import TILE_SIZE
+
 
 class SupportFunctions:
     """Class for all support functions used around the game
     """
+
     @classmethod
     def import_csv_layout(cls, path: str) -> list:
         """Given the path of a csv file, import the layout into a list and return it.

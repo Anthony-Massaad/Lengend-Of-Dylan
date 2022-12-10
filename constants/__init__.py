@@ -2,10 +2,12 @@ from enum import Enum
 
 GAME_WIDTH = GAME_HEIGHT = 595
 
-INVEN_ITEM_BASE_X = 75 
+INVEN_ITEM_BASE_X = 75
 INVEN_ITEM_BASE_Y = 75
 TILE_SIZE = 64
 weapon_images_path = 'graphics/character/weapons'
+
+
 # SQUARE_DISTANCE = GAME_WIDTH // 17
 
 
@@ -45,7 +47,7 @@ class CharacterInfo(Enum):
     HEALTH = 'health'
     MANA = 'mana'
     DEFENSE = 'defense'
-    ATTACK = 'attack' 
+    ATTACK = 'attack'
 
 
 class CollisionName(Enum):
