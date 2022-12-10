@@ -64,10 +64,10 @@ class UserInterface:
     def draw_utils_rect(self, x, y, is_switching_utils):
         rect = pygame.Rect(x, y, UISettings.UTIL_BOX_SIZE.value, UISettings.UTIL_BOX_SIZE.value)
         # Background
-        pygame.draw.rect(self.screen, UISettings.UI_BACKGROUND_COLOR.value, rect)
+        pygame.draw.rect(self.screen, UISettings.UI_BACKGROUND_COLOR.value, rect, 0, UISettings.UTIL_BOX_SIZE.value)
         # Border
         border_color = Color.GOLD.value if is_switching_utils else UISettings.UI_BORDER_COLOR.value
-        pygame.draw.rect(self.screen, border_color, rect, 3)
+        pygame.draw.rect(self.screen, border_color, rect, 3, UISettings.UTIL_BOX_SIZE.value)
         return rect
 
     def weapon_ui(self, weapon_index, is_switching_utils):
@@ -76,7 +76,7 @@ class UserInterface:
         self.screen.blit(weapon_image, weapon_image.get_rect(center=rect.center))
 
     def magic_ui(self, magic_index, is_switching_utils):
-        rect = self.draw_utils_rect(75, GAME_HEIGHT - 85, is_switching_utils)
+        rect = self.draw_utils_rect(75, GAME_HEIGHT - 90, is_switching_utils)
         magic_image = self.magic_images[magic_index]
         self.screen.blit(magic_image, magic_image.get_rect(center=rect.center))
 
