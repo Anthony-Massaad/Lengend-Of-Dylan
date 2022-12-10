@@ -14,6 +14,7 @@ class Timer:
         self.function = function
         self.start_time = 0
         self.active = False
+        self._switch_util = False
 
     def get_pygame_time(self) -> int:
         """get relative time of game in milliseconds
@@ -30,6 +31,9 @@ class Timer:
             bool: True if False, otherwise False
         """
         return not self.active
+
+    def trigger_switch_util(self):
+        return not self._switch_util
     
     def check_active(self) -> bool:
         """check the Timer status 
@@ -45,6 +49,8 @@ class Timer:
         """
         self.active = self.trigger_active()
         self.start_time = self.get_pygame_time()
+        # Won't matter if we are hitting.
+        self._switch_util = self.trigger_switch_util()
     
     def stop_timer(self) -> None:
         """when Timer is done, resets its configurations
@@ -52,20 +58,26 @@ class Timer:
         self.active = self.trigger_active()
         self.start_time = 0
 
-    def update(self, hit_frame, current_frame) -> None: 
-        """update the Timer, checking if it passed the duration given
-        If so, stop the timer and launch the method if given
-        """
-        if not self.active: return
-
-        if hit_frame == current_frame:
-            Log.info(f"Hitting at frame {hit_frame} with {current_frame}")
-            if self.function:
-                self.function()
+    def switch_util(self, direction):
+        if self.function and self._switch_util:
+            self.function(direction)
+            self._switch_util = self.trigger_switch_util()
 
         current_time = self.get_pygame_time()
         if current_time - self.start_time >= self.duration:
             self.stop_timer()
+
+    def use_util(self) -> None:
+        """update the Timer, checking if it passed the duration given
+        If so, stop the timer and launch the method if given
+        """
+        if not self.active:
+            return
+        current_time = self.get_pygame_time()
+        if current_time - self.start_time >= self.duration:
+            self.stop_timer()
+            if self.function:
+                self.function()
             Log.info(f"Timer stopped")
                 
             

@@ -1,5 +1,5 @@
 import pygame
-from constants import CharacterInfo, Font, FontSize, Color, GAME_HEIGHT
+from constants import CharacterInfo, Font, FontSize, Color, GAME_HEIGHT, weapon_images_path, PlayerWeapons
 from enum import Enum
 
 
@@ -25,6 +25,12 @@ class UserInterface:
         self.health_bar = pygame.Rect(10, UISettings.HEALTH_BAR_Y.value, UISettings.HEALTH_WIDTH.value, UISettings.BAR_HEIGHT.value)
         self.mana_bar = pygame.Rect(10, UISettings.HEALTH_BAR_Y.value + UISettings.BAR_HEIGHT.value + 1, UISettings.MANA_WIDTH.value, UISettings.BAR_HEIGHT.value)
 
+        # graphics for the player weapons
+        self.weapon_images = []
+        for weapon_name in PlayerWeapons:
+            full_path = f"{weapon_images_path}/{weapon_name.value}.png"
+            self.weapon_images.append(pygame.image.load(full_path).convert_alpha())
+
     def draw_bar(self, current_value, max_value, rect, color, is_health_bar):
         # Drawing background of the bar Might delete
         pygame.draw.rect(self.screen, UISettings.UI_BACKGROUND_COLOR.value, rect)
@@ -45,15 +51,26 @@ class UserInterface:
         # drawing the border
         pygame.draw.rect(self.screen, UISettings.UI_BORDER_COLOR.value, rect, 3)
 
-    def draw_utils(self, x, y):
+    def draw_utils_rect(self, x, y):
         rect = pygame.Rect(x, y, UISettings.UTIL_BOX_SIZE.value, UISettings.UTIL_BOX_SIZE.value)
+        # Background
         pygame.draw.rect(self.screen, UISettings.UI_BACKGROUND_COLOR.value, rect)
+        # Border
         pygame.draw.rect(self.screen, UISettings.UI_BORDER_COLOR.value, rect, 3)
+
+        return rect
+
+    def weapon_ui(self, weapon_index):
+        rect = self.draw_utils_rect(10, GAME_HEIGHT - 90)
+        weapon_image = self.weapon_images[weapon_index]
+        self.screen.blit(weapon_image, weapon_image.get_rect(center=rect.center))
 
     def draw(self, player):
         self.draw_bar(player.current_stats[CharacterInfo.HEALTH.value], player.max_stats[CharacterInfo.HEALTH.value], self.health_bar, Color.GREEN.value, True)
         self.draw_bar(player.current_stats[CharacterInfo.MANA.value], player.max_stats[CharacterInfo.MANA.value], self.mana_bar, Color.BLUE.value, False)
-        self.draw_utils(10, GAME_HEIGHT - 90)
-        self.draw_utils(75, GAME_HEIGHT - 85)
+        # self.draw_utils(10, GAME_HEIGHT - 90)
+
+        self.weapon_ui(player.weapon_index)
+        self.draw_utils_rect(75, GAME_HEIGHT - 85)
         # pygame.draw.rect(self.screen, Color.RED.value, self.health_bar)
         # pygame.draw.rect(self.screen, Color.BLUE.value, self.mana_bar)

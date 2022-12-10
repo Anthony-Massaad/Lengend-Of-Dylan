@@ -3,7 +3,9 @@ from item.item import Item
 
 class Inventory:
 
-    def __init__(self, items: dict ={}):
+    def __init__(self, items=None):
+        if items is None:
+            items = {}
         self.items = items
     
     def add_to_item(self, item: Item, quantity: int) -> None:

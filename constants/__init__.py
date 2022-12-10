@@ -5,17 +5,29 @@ GAME_WIDTH = GAME_HEIGHT = 595
 INVEN_ITEM_BASE_X = 75 
 INVEN_ITEM_BASE_Y = 75
 TILE_SIZE = 64
-
+weapon_images_path = 'graphics/character/weapons'
 # SQUARE_DISTANCE = GAME_WIDTH // 17
+
+
+class PlayerWeapons(Enum):
+    SWORD = 'sword'
+    SPEAR = "spear"
+    SAI = "sai"
+    AXE = "axe"
+
 
 class ItemName(Enum):
     BEER = 'beer'
     WATER = 'water'
 
+
 class Font(Enum):
     ARIAL = 'Arial'
+
+
 class FontSize(Enum):
     size_18 = 18
+
 
 class Color(Enum):
     BLACK = (0, 0, 0)
@@ -28,11 +40,13 @@ class Color(Enum):
     GREY = (168, 168, 168)
     GOLD = "gold"
 
+
 class CharacterInfo(Enum):
     HEALTH = 'health'
     MANA = 'mana'
     DEFENSE = 'defense'
     ATTACK = 'attack' 
+
 
 class CollisionName(Enum):
     HORIZONTAL = 'horizontal'
