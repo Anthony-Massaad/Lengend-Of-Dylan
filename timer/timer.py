@@ -37,14 +37,6 @@ class Timer:
     def trigger_switch_util(self):
         return not self._switch_util
 
-    def check_active(self) -> bool:
-        """check the Timer status 
-
-        Returns:
-            bool: True if active, otherwise False
-        """
-        return self.active
-
     def start_timer(self) -> None:
         """Start the timer my activating it and getting the 
         relative start time in pygame

@@ -11,6 +11,11 @@ magic_path = 'graphics/character/magic'
 # SQUARE_DISTANCE = GAME_WIDTH // 17
 
 
+class PlayerUtilNames(Enum):
+    MAGIC = "magic"
+    WEAPON = "weapon"
+
+
 class PlayerWeapons(Enum):
     SWORD = 'sword'
     SPEAR = "spear"

@@ -2,7 +2,7 @@ from enum import Enum
 
 import pygame
 
-from constants import CharacterInfo, Font, FontSize, Color, GAME_HEIGHT, weapon_images_path, PlayerWeapons
+from constants import CharacterInfo, Font, FontSize, Color, GAME_HEIGHT, weapon_images_path, PlayerWeapons, magic_path, PlayerMagics, PlayerUtilNames
 
 
 class UISettings(Enum):
@@ -35,6 +35,12 @@ class UserInterface:
             full_path = f"{weapon_images_path}/{weapon_name.value}.png"
             self.weapon_images.append(pygame.image.load(full_path).convert_alpha())
 
+        # gaphics for player magics
+        self.magic_images = []
+        for magic_name in PlayerMagics:
+            full_path = f"{magic_path}/{magic_name.value}/{magic_name.value}.png"
+            self.magic_images.append(pygame.image.load(full_path).convert_alpha())
+
     def draw_bar(self, current_value, max_value, rect, color, is_health_bar):
         # Drawing background of the bar Might delete
         pygame.draw.rect(self.screen, UISettings.UI_BACKGROUND_COLOR.value, rect)
@@ -62,7 +68,6 @@ class UserInterface:
         # Border
         border_color = Color.GOLD.value if is_switching_utils else UISettings.UI_BORDER_COLOR.value
         pygame.draw.rect(self.screen, border_color, rect, 3)
-
         return rect
 
     def weapon_ui(self, weapon_index, is_switching_utils):
@@ -70,14 +75,20 @@ class UserInterface:
         weapon_image = self.weapon_images[weapon_index]
         self.screen.blit(weapon_image, weapon_image.get_rect(center=rect.center))
 
+    def magic_ui(self, magic_index, is_switching_utils):
+        rect = self.draw_utils_rect(75, GAME_HEIGHT - 85, is_switching_utils)
+        magic_image = self.magic_images[magic_index]
+        self.screen.blit(magic_image, magic_image.get_rect(center=rect.center))
+
     def draw(self, player):
         self.draw_bar(player.current_stats[CharacterInfo.HEALTH.value], player.max_stats[CharacterInfo.HEALTH.value],
                       self.health_bar, Color.GREEN.value, True)
         self.draw_bar(player.current_stats[CharacterInfo.MANA.value], player.max_stats[CharacterInfo.MANA.value],
                       self.mana_bar, Color.BLUE.value, False)
-        # self.draw_utils(10, GAME_HEIGHT - 90)
 
-        self.weapon_ui(player.weapon_index, player.weapon_switch_timer.check_active())
-        # self.draw_utils_rect(75, GAME_HEIGHT - 85)
-        # pygame.draw.rect(self.screen, Color.RED.value, self.health_bar)
-        # pygame.draw.rect(self.screen, Color.BLUE.value, self.mana_bar)
+        if player.last_util_switch == PlayerUtilNames.MAGIC:
+            self.weapon_ui(player.weapon_index, player.weapon_switch_timer.active)
+            self.magic_ui(player.magic_index, player.magic_switch_timer.active)
+        elif player.last_util_switch == PlayerUtilNames.WEAPON:
+            self.magic_ui(player.magic_index, player.magic_switch_timer.active)
+            self.weapon_ui(player.weapon_index, player.weapon_switch_timer.active)

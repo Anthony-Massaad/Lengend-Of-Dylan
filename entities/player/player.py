@@ -2,7 +2,7 @@ from enum import Enum
 
 import pygame
 
-from constants import CharacterInfo, ItemName, CollisionName, PlayerWeapons, PlayerMagics
+from constants import CharacterInfo, ItemName, CollisionName, PlayerWeapons, PlayerMagics, PlayerUtilNames
 from inventory.inventory import Inventory
 from item.item import Item
 from item.item_data import ItemData
@@ -11,7 +11,7 @@ from support_functions.support_functions import SupportFunctions
 from timer.timer import Timer
 
 
-# Class constans for all the player movements. Name is relative to the folder directory
+# Class constants for all the player movements. Name is relative to the folder directory
 class Movement(Enum):
     UP = 'up'
     UP_IDLE = "up_idle"
@@ -70,6 +70,7 @@ class Player(pygame.sprite.Sprite):
 
         ### BEGINNING OF UTILS ###
         self.util_switch_direction = 1
+        self.last_util_switch = PlayerUtilNames.MAGIC
         # Player weapons
         self.weapon_index = 0
         self.weapons = []
@@ -99,7 +100,7 @@ class Player(pygame.sprite.Sprite):
 
     def controls(self):
         keys = pygame.key.get_pressed()
-        if self.weapon_timer[self.selected_weapon].check_active():
+        if self.weapon_timer[self.selected_weapon].active:
             return
         # check inven active 
         # if keys[pygame.K_l] and InventoryGUI.inventory_triggered:
@@ -141,26 +142,32 @@ class Player(pygame.sprite.Sprite):
             Log.info("Player Magic invoked")
 
         # Switching weapons
-        if keys[pygame.K_l] and not self.weapon_switch_timer.active:
-            Log.info(f"Player weapon switching invoked forward")
-            self.weapon_switch_timer.start_timer()
-            self.util_switch_direction = 1
+        if not self.weapon_switch_timer.active:
+            if keys[pygame.K_l]:
+                Log.info(f"Player weapon switching invoked forward")
+                self.weapon_switch_timer.start_timer()
+                self.util_switch_direction = 1
+                self.last_util_switch = PlayerUtilNames.WEAPON
 
-        if keys[pygame.K_j] and not self.weapon_switch_timer.active:
-            Log.info(f"Player weapon switching invoked backward")
-            self.weapon_switch_timer.start_timer()
-            self.util_switch_direction = -1
+            if keys[pygame.K_j]:
+                Log.info(f"Player weapon switching invoked backward")
+                self.weapon_switch_timer.start_timer()
+                self.util_switch_direction = -1
+                self.last_util_switch = PlayerUtilNames.WEAPON
 
         # Switching magic
-        if keys[pygame.K_o] and not self.magic_switch_timer.active:
-            Log.info(f"Player magic switching invoked forward")
-            self.magic_switch_timer.start_timer()
-            self.util_switch_direction = 1
+        if not self.magic_switch_timer.active:
+            if keys[pygame.K_o]:
+                Log.info(f"Player magic switching invoked forward")
+                self.magic_switch_timer.start_timer()
+                self.util_switch_direction = 1
+                self.last_util_switch = PlayerUtilNames.MAGIC
 
-        if keys[pygame.K_u] and not self.magic_switch_timer.active:
-            Log.info(f"Player magic switching invoked backward")
-            self.magic_switch_timer.start_timer()
-            self.util_switch_direction = -1
+            if keys[pygame.K_u]:
+                Log.info(f"Player magic switching invoked backward")
+                self.magic_switch_timer.start_timer()
+                self.util_switch_direction = -1
+                self.last_util_switch = PlayerUtilNames.MAGIC
 
         # # inventory trigger
         # if keys[pygame.K_i]:
@@ -253,7 +260,7 @@ class Player(pygame.sprite.Sprite):
             self.animations[animation_key] = SupportFunctions.import_folder(animation_path)
 
     def animate_character(self, delta_time: float):
-        if self.weapon_timer[self.selected_weapon].check_active():
+        if self.weapon_timer[self.selected_weapon].active:
             self.player_frame += 12 * delta_time
             Log.debug(f"Player frame on hit {int(self.player_frame)}")
         else:
@@ -271,7 +278,7 @@ class Player(pygame.sprite.Sprite):
         if self.direction.magnitude() == 0:
             self.movement_status = self.add_action_to_respected_status("_idle")
 
-        if self.weapon_timer[PlayerWeapons.SWORD.value].check_active():
+        if self.weapon_timer[PlayerWeapons.SWORD.value].active:
             self.movement_status = self.add_action_to_respected_status(f'_{self.selected_weapon}_swing')
 
     def update(self, delta_time: float):
