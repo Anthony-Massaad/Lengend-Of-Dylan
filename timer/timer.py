@@ -82,12 +82,12 @@ class Timer:
                 self.function()
             Log.debug(f"Timer stopped")
 
-    def mana_regeneration(self, delta_time):
+    def mana_regeneration(self):
         if not self.active:
             return
 
         if self.function and self.is_mana_regen:
-            self.function(delta_time)
+            self.function()
             self.is_mana_regen = self.trigger_mana_regen()
 
         current_time = self.get_pygame_time()

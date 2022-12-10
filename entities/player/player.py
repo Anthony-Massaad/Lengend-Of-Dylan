@@ -105,7 +105,7 @@ class Player(pygame.sprite.Sprite):
         ### END OF UTILS ###
 
         # sel.fmana_regen_timer = Timer(250, self.mana_regeneration)
-        self.mana_regen_timer = Timer(350, lambda delta_time: self.mana_regeneration(delta_time))
+        self.mana_regen_timer = Timer(350, self.mana_regeneration)
 
         # inventory
         self.inventory = Inventory()
@@ -193,12 +193,12 @@ class Player(pygame.sprite.Sprite):
         #     self.weapon_switch_timer.switch_util()
         #     print("magic_triggered")
 
-    def update_timers(self, delta_time):
+    def update_timers(self):
         self.util_timers[self.selected_weapon].use_util()
         self.util_timers[self.selected_magic].use_util()
         self.weapon_switch_timer.switch_util(self.util_switch_direction)
         self.magic_switch_timer.switch_util(self.util_switch_direction)
-        self.mana_regen_timer.mana_regeneration(delta_time)
+        self.mana_regen_timer.mana_regeneration()
 
     def switch_magic(self, direction):
         Log.info(f"Weapon switch direction {direction}")
@@ -259,7 +259,7 @@ class Player(pygame.sprite.Sprite):
         elif direction == Movement.UP.value:
             ...
 
-    def mana_regeneration(self, delta_time):
+    def mana_regeneration(self):
         self.current_stats[CharacterInfo.MANA.value] += 4
         if self.current_stats[CharacterInfo.MANA.value] > self.max_stats[CharacterInfo.MANA.value]:
             self.current_stats[CharacterInfo.MANA.value] = self.max_stats[CharacterInfo.MANA.value]
@@ -341,6 +341,6 @@ class Player(pygame.sprite.Sprite):
             self.mana_regen_timer.start_timer()
         self.move(delta_time)
         self.animate_character(delta_time)
-        self.update_timers(delta_time)
+        self.update_timers()
         self.check_idle_status()
         # weapon switching
