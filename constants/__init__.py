@@ -38,7 +38,7 @@ class Color(Enum):
     GREEN = (0, 255, 0)
     ORANGE = (252, 163, 0)
     GREY = (168, 168, 168)
-    GOLD = "gold"
+    GOLD = (255, 215, 0)
 
 
 class CharacterInfo(Enum):

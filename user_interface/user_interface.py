@@ -51,17 +51,18 @@ class UserInterface:
         # drawing the border
         pygame.draw.rect(self.screen, UISettings.UI_BORDER_COLOR.value, rect, 3)
 
-    def draw_utils_rect(self, x, y):
+    def draw_utils_rect(self, x, y, is_switching_utils):
         rect = pygame.Rect(x, y, UISettings.UTIL_BOX_SIZE.value, UISettings.UTIL_BOX_SIZE.value)
         # Background
         pygame.draw.rect(self.screen, UISettings.UI_BACKGROUND_COLOR.value, rect)
         # Border
-        pygame.draw.rect(self.screen, UISettings.UI_BORDER_COLOR.value, rect, 3)
+        border_color = Color.GOLD.value if is_switching_utils else UISettings.UI_BORDER_COLOR.value
+        pygame.draw.rect(self.screen, border_color, rect, 3)
 
         return rect
 
-    def weapon_ui(self, weapon_index):
-        rect = self.draw_utils_rect(10, GAME_HEIGHT - 90)
+    def weapon_ui(self, weapon_index, is_switching_utils):
+        rect = self.draw_utils_rect(10, GAME_HEIGHT - 90, is_switching_utils)
         weapon_image = self.weapon_images[weapon_index]
         self.screen.blit(weapon_image, weapon_image.get_rect(center=rect.center))
 
@@ -70,7 +71,7 @@ class UserInterface:
         self.draw_bar(player.current_stats[CharacterInfo.MANA.value], player.max_stats[CharacterInfo.MANA.value], self.mana_bar, Color.BLUE.value, False)
         # self.draw_utils(10, GAME_HEIGHT - 90)
 
-        self.weapon_ui(player.weapon_index)
-        self.draw_utils_rect(75, GAME_HEIGHT - 85)
+        self.weapon_ui(player.weapon_index, player.weapon_switch_timer.check_active())
+        # self.draw_utils_rect(75, GAME_HEIGHT - 85)
         # pygame.draw.rect(self.screen, Color.RED.value, self.health_bar)
         # pygame.draw.rect(self.screen, Color.BLUE.value, self.mana_bar)

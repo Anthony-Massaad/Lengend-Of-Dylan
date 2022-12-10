@@ -59,6 +59,9 @@ class Timer:
         self.start_time = 0
 
     def switch_util(self, direction):
+        if not self.active:
+            return
+
         if self.function and self._switch_util:
             self.function(direction)
             self._switch_util = self.trigger_switch_util()
