@@ -9,6 +9,7 @@ from item.item_data import ItemData
 from logger.log import Log
 from support_functions.support_functions import SupportFunctions
 from timer.timer import Timer
+import threading
 
 
 # Class constants for all the player movements. Name is relative to the folder directory
@@ -27,24 +28,32 @@ class Movement(Enum):
     RIGHT_SWORD_SWING = "right_sword_swing"
 
 
-# Class constant for all the player weapon animations. Name is relative to the folder directory
+class DataConstant(Enum):
+    STRENGTH = 'strength'
+    COST = 'cost'
+
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group,
-                 screen: pygame.surface.Surface):
+    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group, screen: pygame.surface.Surface):
         super().__init__(group)
-        # Player status
+        # Player stats
         self.current_stats = {
             CharacterInfo.HEALTH.value: 100,
             CharacterInfo.DEFENSE.value: 25,
             CharacterInfo.ATTACK.value: 10,
+            CharacterInfo.MANA_ATTACK.value: 5,
             CharacterInfo.MANA.value: 100
         }
 
         self.max_stats = {
             CharacterInfo.HEALTH.value: 100,
             CharacterInfo.MANA.value: 100
+        }
+
+        self.magic_data = {
+            PlayerMagics.FLAME.value: {DataConstant.STRENGTH: 5, DataConstant.COST: 55},
+            PlayerMagics.HEAL.value: {DataConstant.STRENGTH: 25, DataConstant.COST: 35}
         }
 
         # get the basic graphics of the player
@@ -88,11 +97,15 @@ class Player(pygame.sprite.Sprite):
         self.selected_magic = self.magics[self.magic_index]
         self.magic_switch_timer = Timer(200, lambda direction: self.switch_magic(direction))
         # utils timer
-        self.weapon_timer = {
+        self.util_timers = {
             PlayerWeapons.SWORD.value: Timer(350, self.use_weapon),
-            PlayerMagics.FLAME.value: Timer(100, self.use_magic)
+            PlayerMagics.FLAME.value: Timer(200, self.use_magic),
+            PlayerMagics.HEAL.value: Timer(200, self.use_magic)
         }
         ### END OF UTILS ###
+
+        # sel.fmana_regen_timer = Timer(250, self.mana_regeneration)
+        self.mana_regen_timer = Timer(350, lambda delta_time: self.mana_regeneration(delta_time))
 
         # inventory
         self.inventory = Inventory()
@@ -100,7 +113,7 @@ class Player(pygame.sprite.Sprite):
 
     def controls(self):
         keys = pygame.key.get_pressed()
-        if self.weapon_timer[self.selected_weapon].active:
+        if self.util_timers[self.selected_weapon].active:
             return
         # check inven active 
         # if keys[pygame.K_l] and InventoryGUI.inventory_triggered:
@@ -129,17 +142,23 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
 
+        if self.util_timers[self.selected_magic].active:
+            return
+
         # weapon invoked
         if keys[pygame.K_k]:
-            Log.info("Player attack invoked")
-            self.weapon_timer[PlayerWeapons.SWORD.value].start_timer()
+            Log.info(f"Player attack invoked using {self.selected_weapon}")
+            self.util_timers[self.selected_weapon].start_timer()
             # reset the direction when using a weapon and the player index
             self.direction = pygame.math.Vector2()
             self.player_frame = 0
 
         # magic invoked
         if keys[pygame.K_i]:
-            Log.info("Player Magic invoked")
+            Log.info(f"Player Magic invoked using {self.selected_magic}")
+            self.util_timers[self.selected_magic].start_timer()
+            self.direction = pygame.math.Vector2()
+            self.player_frame = 0
 
         # Switching weapons
         if not self.weapon_switch_timer.active:
@@ -174,10 +193,12 @@ class Player(pygame.sprite.Sprite):
         #     self.weapon_switch_timer.switch_util()
         #     print("magic_triggered")
 
-    def update_timers(self):
-        self.weapon_timer[self.selected_weapon].use_util()
+    def update_timers(self, delta_time):
+        self.util_timers[self.selected_weapon].use_util()
+        self.util_timers[self.selected_magic].use_util()
         self.weapon_switch_timer.switch_util(self.util_switch_direction)
         self.magic_switch_timer.switch_util(self.util_switch_direction)
+        self.mana_regen_timer.mana_regeneration(delta_time)
 
     def switch_magic(self, direction):
         Log.info(f"Weapon switch direction {direction}")
@@ -186,10 +207,36 @@ class Player(pygame.sprite.Sprite):
             self.magic_index = 0
         if self.magic_index < 0:
             self.magic_index = len(self.magics) - 1
-        Log.info(f"Current weapon is {self.magics[self.magic_index]}")
+        self.selected_magic = self.magics[self.magic_index]
+        Log.info(f"Current weapon is {self.selected_magic}")
 
     def use_magic(self):
-        ...
+        strength = self.magic_data[self.selected_magic][DataConstant.STRENGTH]
+        if self.selected_magic != PlayerMagics.HEAL.value:
+            strength += self.current_stats[CharacterInfo.MANA_ATTACK.value]
+        cost = self.magic_data[self.selected_magic][DataConstant.COST]
+        Log.debug(f"Magic strength of {self.selected_magic} is {strength}")
+        Log.debug(f"Magic cost of {self.selected_magic} is {cost}")
+
+        if not self.reduce_mana(cost):
+            return
+
+        if self.selected_magic == PlayerMagics.HEAL.value:
+            self.heal(strength)
+
+    def reduce_mana(self, cost):
+        if self.current_stats[CharacterInfo.MANA.value] < cost:
+            return False
+        self.current_stats[CharacterInfo.MANA.value] -= cost
+        if self.current_stats[CharacterInfo.MANA.value] > self.max_stats[CharacterInfo.MANA.value]:
+            self.current_stats[CharacterInfo.MANA.value] = self.max_stats[CharacterInfo.MANA.value]
+
+        return True
+
+    def heal(self, strength):
+        self.current_stats[CharacterInfo.HEALTH.value] += strength
+        if self.current_stats[CharacterInfo.HEALTH.value] > self.max_stats[CharacterInfo.HEALTH.value]:
+            self.current_stats[CharacterInfo.HEALTH.value] = self.max_stats[CharacterInfo.HEALTH.value]
 
     def switch_weapon(self, direction):
         Log.info(f"Weapon switch direction {direction}")
@@ -211,6 +258,13 @@ class Player(pygame.sprite.Sprite):
             ...
         elif direction == Movement.UP.value:
             ...
+
+    def mana_regeneration(self, delta_time):
+        self.current_stats[CharacterInfo.MANA.value] += 4
+        if self.current_stats[CharacterInfo.MANA.value] > self.max_stats[CharacterInfo.MANA.value]:
+            self.current_stats[CharacterInfo.MANA.value] = self.max_stats[CharacterInfo.MANA.value]
+
+        Log.info(f"Mana regenerating. Current {self.current_stats[CharacterInfo.MANA.value]}")
 
     def move(self, delta_time: float):
         # default the vector so diagonal is the same
@@ -260,7 +314,7 @@ class Player(pygame.sprite.Sprite):
             self.animations[animation_key] = SupportFunctions.import_folder(animation_path)
 
     def animate_character(self, delta_time: float):
-        if self.weapon_timer[self.selected_weapon].active:
+        if self.util_timers[self.selected_weapon].active:
             self.player_frame += 12 * delta_time
             Log.debug(f"Player frame on hit {int(self.player_frame)}")
         else:
@@ -278,13 +332,15 @@ class Player(pygame.sprite.Sprite):
         if self.direction.magnitude() == 0:
             self.movement_status = self.add_action_to_respected_status("_idle")
 
-        if self.weapon_timer[PlayerWeapons.SWORD.value].active:
+        if self.util_timers[PlayerWeapons.SWORD.value].active:
             self.movement_status = self.add_action_to_respected_status(f'_{self.selected_weapon}_swing')
 
     def update(self, delta_time: float):
         self.controls()
+        if self.current_stats[CharacterInfo.MANA.value] < self.max_stats[CharacterInfo.MANA.value] and not self.mana_regen_timer.active:
+            self.mana_regen_timer.start_timer()
         self.move(delta_time)
         self.animate_character(delta_time)
-        self.update_timers()
+        self.update_timers(delta_time)
         self.check_idle_status()
         # weapon switching

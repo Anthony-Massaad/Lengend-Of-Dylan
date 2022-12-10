@@ -17,6 +17,7 @@ class Timer:
         self.start_time = 0
         self.active = False
         self._switch_util = False
+        self.is_mana_regen = False
 
     def get_pygame_time(self) -> int:
         """get relative time of game in milliseconds
@@ -37,14 +38,18 @@ class Timer:
     def trigger_switch_util(self):
         return not self._switch_util
 
+    def trigger_mana_regen(self):
+        return not self.is_mana_regen
+
     def start_timer(self) -> None:
         """Start the timer my activating it and getting the 
         relative start time in pygame
         """
         self.active = self.trigger_active()
         self.start_time = self.get_pygame_time()
-        # Won't matter if we are hitting.
+        # Won't matter if we are hitting or using magic
         self._switch_util = self.trigger_switch_util()
+        self.is_mana_regen = self.trigger_mana_regen()
 
     def stop_timer(self) -> None:
         """when Timer is done, resets its configurations
@@ -75,4 +80,16 @@ class Timer:
             self.stop_timer()
             if self.function:
                 self.function()
-            Log.info(f"Timer stopped")
+            Log.debug(f"Timer stopped")
+
+    def mana_regeneration(self, delta_time):
+        if not self.active:
+            return
+
+        if self.function and self.is_mana_regen:
+            self.function(delta_time)
+            self.is_mana_regen = self.trigger_mana_regen()
+
+        current_time = self.get_pygame_time()
+        if current_time - self.start_time >= self.duration:
+            self.stop_timer()

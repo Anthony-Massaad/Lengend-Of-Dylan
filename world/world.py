@@ -14,7 +14,7 @@ class RoomView(pygame.sprite.Group):
 
     def __init__(self) -> None:
         """Initialize the RoomView for given groups. 
-        Generates offsets for the game, sprites and map.
+        Generate offsets for the game, sprites and map.
         """
         super().__init__()
         self.display_surface = pygame.display.get_surface()

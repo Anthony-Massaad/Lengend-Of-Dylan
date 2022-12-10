@@ -58,6 +58,7 @@ class CharacterInfo(Enum):
     MANA = 'mana'
     DEFENSE = 'defense'
     ATTACK = 'attack'
+    MANA_ATTACK = 'mana_attack'
 
 
 class CollisionName(Enum):
