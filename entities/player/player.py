@@ -2,15 +2,14 @@ from enum import Enum
 
 import pygame
 
-from constants import CharacterInfo, ItemName, CollisionName, PlayerWeapons, PlayerMagics, PlayerUtilNames
+from constants import StatsName, ItemName, CollisionName, PlayerWeapons, PlayerMagics, PlayerUtilNames, FilePath
 from inventory.inventory import Inventory
 from item.item import Item
 from item.item_data import ItemData
 from logger.log import Log
 from support_functions.support_functions import SupportFunctions
 from timer.timer import Timer
-import threading
-
+from entities.entity import Entity
 
 # Class constants for all the player movements. Name is relative to the folder directory
 class Movement(Enum):
@@ -33,22 +32,23 @@ class DataConstant(Enum):
     COST = 'cost'
 
 
-class Player(pygame.sprite.Sprite):
+class Player(Entity):
 
-    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group, screen: pygame.surface.Surface):
+    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group):
         super().__init__(group)
         # Player stats
         self.current_stats = {
-            CharacterInfo.HEALTH.value: 100,
-            CharacterInfo.DEFENSE.value: 25,
-            CharacterInfo.ATTACK.value: 10,
-            CharacterInfo.MANA_ATTACK.value: 5,
-            CharacterInfo.MANA.value: 100
+            StatsName.HEALTH.value: 100,
+            StatsName.DEFENSE.value: 25,
+            StatsName.ATTACK.value: 25,
+            StatsName.MANA_ATTACK.value: 5,
+            StatsName.MANA.value: 100,
+            StatsName.SPEED.value: 300
         }
 
         self.max_stats = {
-            CharacterInfo.HEALTH.value: 100,
-            CharacterInfo.MANA.value: 100
+            StatsName.HEALTH.value: 100,
+            StatsName.MANA.value: 100
         }
 
         self.magic_data = {
@@ -57,25 +57,20 @@ class Player(pygame.sprite.Sprite):
         }
 
         # get the basic graphics of the player
-        self.animations = {}
         for movement in Movement:
             self.animations[movement.value] = []
         Log.info(f"Player Animations dictionary is {self.animations}")
-        self.import_graphics()
+        self.import_graphics(FilePath.character_path.value)
         self.movement_status = Movement.DOWN_IDLE.value
-        self.player_frame = 0
-        self.screen = screen
         self.game_obstacle_sprites = game_obstacle_sprites
 
         # image of the sprite (width, height)
-        self.image = self.animations[self.movement_status][self.player_frame]
+        self.image = self.animations[self.movement_status][self.frame_index]
         self.rect = self.image.get_rect(topleft=position)
         self.hitbox = self.rect.inflate(0, -20)
 
         # vector direction as x = 0, y = 0
-        self.direction = pygame.math.Vector2()
         self.position = pygame.math.Vector2(self.rect.topleft)
-        self.speed = 300
 
         ### BEGINNING OF UTILS ###
         self.util_switch_direction = 1
@@ -104,7 +99,6 @@ class Player(pygame.sprite.Sprite):
         }
         ### END OF UTILS ###
 
-        # sel.fmana_regen_timer = Timer(250, self.mana_regeneration)
         self.mana_regen_timer = Timer(350, self.mana_regeneration)
 
         # inventory
@@ -151,14 +145,14 @@ class Player(pygame.sprite.Sprite):
             self.util_timers[self.selected_weapon].start_timer()
             # reset the direction when using a weapon and the player index
             self.direction = pygame.math.Vector2()
-            self.player_frame = 0
+            self.frame_index = 0
 
         # magic invoked
         if keys[pygame.K_i]:
             Log.info(f"Player Magic invoked using {self.selected_magic}")
             self.util_timers[self.selected_magic].start_timer()
             self.direction = pygame.math.Vector2()
-            self.player_frame = 0
+            self.frame_index = 0
 
         # Switching weapons
         if not self.weapon_switch_timer.active:
@@ -213,7 +207,7 @@ class Player(pygame.sprite.Sprite):
     def use_magic(self):
         strength = self.magic_data[self.selected_magic][DataConstant.STRENGTH]
         if self.selected_magic != PlayerMagics.HEAL.value:
-            strength += self.current_stats[CharacterInfo.MANA_ATTACK.value]
+            strength += self.current_stats[StatsName.MANA_ATTACK.value]
         cost = self.magic_data[self.selected_magic][DataConstant.COST]
         Log.debug(f"Magic strength of {self.selected_magic} is {strength}")
         Log.debug(f"Magic cost of {self.selected_magic} is {cost}")
@@ -225,18 +219,18 @@ class Player(pygame.sprite.Sprite):
             self.heal(strength)
 
     def reduce_mana(self, cost):
-        if self.current_stats[CharacterInfo.MANA.value] < cost:
+        if self.current_stats[StatsName.MANA.value] < cost:
             return False
-        self.current_stats[CharacterInfo.MANA.value] -= cost
-        if self.current_stats[CharacterInfo.MANA.value] > self.max_stats[CharacterInfo.MANA.value]:
-            self.current_stats[CharacterInfo.MANA.value] = self.max_stats[CharacterInfo.MANA.value]
+        self.current_stats[StatsName.MANA.value] -= cost
+        if self.current_stats[StatsName.MANA.value] > self.max_stats[StatsName.MANA.value]:
+            self.current_stats[StatsName.MANA.value] = self.max_stats[StatsName.MANA.value]
 
         return True
 
     def heal(self, strength):
-        self.current_stats[CharacterInfo.HEALTH.value] += strength
-        if self.current_stats[CharacterInfo.HEALTH.value] > self.max_stats[CharacterInfo.HEALTH.value]:
-            self.current_stats[CharacterInfo.HEALTH.value] = self.max_stats[CharacterInfo.HEALTH.value]
+        self.current_stats[StatsName.HEALTH.value] += strength
+        if self.current_stats[StatsName.HEALTH.value] > self.max_stats[StatsName.HEALTH.value]:
+            self.current_stats[StatsName.HEALTH.value] = self.max_stats[StatsName.HEALTH.value]
 
     def switch_weapon(self, direction):
         Log.info(f"Weapon switch direction {direction}")
@@ -245,7 +239,7 @@ class Player(pygame.sprite.Sprite):
             self.weapon_index = 0
         if self.weapon_index < 0:
             self.weapon_index = len(self.weapons) - 1
-        Log.info(f"Current weapon is {self.weapons[self.weapon_index]}")
+        Log.debug(f"Current weapon is {self.weapons[self.weapon_index]}")
 
     def use_weapon(self):
         direction = self.movement_status.split('_')[0]
@@ -260,69 +254,22 @@ class Player(pygame.sprite.Sprite):
             ...
 
     def mana_regeneration(self):
-        self.current_stats[CharacterInfo.MANA.value] += 4
-        if self.current_stats[CharacterInfo.MANA.value] > self.max_stats[CharacterInfo.MANA.value]:
-            self.current_stats[CharacterInfo.MANA.value] = self.max_stats[CharacterInfo.MANA.value]
+        self.current_stats[StatsName.MANA.value] += 4
+        if self.current_stats[StatsName.MANA.value] > self.max_stats[StatsName.MANA.value]:
+            self.current_stats[StatsName.MANA.value] = self.max_stats[StatsName.MANA.value]
 
-        Log.info(f"Mana regenerating. Current {self.current_stats[CharacterInfo.MANA.value]}")
+        Log.info(f"Mana regenerating. Current {self.current_stats[StatsName.MANA.value]}")
 
-    def move(self, delta_time: float):
-        # default the vector so diagonal is the same
-        if self.direction.magnitude() > 0:
-            self.direction = self.direction.normalize()
-
-        # horizontal
-        self.position.x += self.direction.x * self.speed * delta_time
-        self.hitbox.x = self.position.x
-        self.collision(CollisionName.HORIZONTAL.value)
-
-        # vertical
-        self.position.y += self.direction.y * self.speed * delta_time
-        self.hitbox.y = self.position.y
-        self.collision(CollisionName.VERTICAL.value)
-
-        self.rect.center = self.hitbox.center
-
-    def collision(self, direction: str):
-        if direction == CollisionName.HORIZONTAL.value:
-            for sprite in self.game_obstacle_sprites:
-                if sprite.hitbox.colliderect(self.hitbox):
-                    # check right
-                    # move the overlap to the left side of the sprite
-                    if self.direction.x > 0:
-                        self.hitbox.right = sprite.hitbox.left
-                    # check left
-                    if self.direction.x < 0:
-                        self.hitbox.left = sprite.hitbox.right
-                    self.position.x = self.hitbox.x
-
-        if direction == CollisionName.VERTICAL.value:
-            for sprite in self.game_obstacle_sprites:
-                if sprite.hitbox.colliderect(self.hitbox):
-                    # check down
-                    if self.direction.y > 0:
-                        self.hitbox.bottom = sprite.hitbox.top
-                    # check up 
-                    if self.direction.y < 0:
-                        self.hitbox.top = sprite.hitbox.bottom
-                    self.position.y = self.hitbox.y
-
-    def import_graphics(self):
-        general_path = 'graphics/character/'
-        for animation_key in self.animations.keys():
-            animation_path = general_path + animation_key
-            self.animations[animation_key] = SupportFunctions.import_folder(animation_path)
-
-    def animate_character(self, delta_time: float):
+    def animate_entity(self, delta_time: float):
         if self.util_timers[self.selected_weapon].active:
-            self.player_frame += 12 * delta_time
-            Log.debug(f"Player frame on hit {int(self.player_frame)}")
+            self.frame_index += 12 * delta_time
+            Log.debug(f"Player frame on hit {int(self.frame_index)}")
         else:
-            self.player_frame += 4 * delta_time
+            self.frame_index += 4 * delta_time
 
-        if self.player_frame >= len(self.animations[self.movement_status]):
-            self.player_frame = 0
-        self.image = self.animations[self.movement_status][int(self.player_frame)]
+        if self.frame_index >= len(self.animations[self.movement_status]):
+            self.frame_index = 0
+        self.image = self.animations[self.movement_status][int(self.frame_index)]
 
     def add_action_to_respected_status(self, action: str):
         return self.movement_status.split('_')[0] + action
@@ -337,10 +284,10 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, delta_time: float):
         self.controls()
-        if self.current_stats[CharacterInfo.MANA.value] < self.max_stats[CharacterInfo.MANA.value] and not self.mana_regen_timer.active:
+        if self.current_stats[StatsName.MANA.value] < self.max_stats[StatsName.MANA.value] and not self.mana_regen_timer.active:
             self.mana_regen_timer.start_timer()
         self.move(delta_time)
-        self.animate_character(delta_time)
+        self.animate_entity(delta_time)
         self.update_timers()
         self.check_idle_status()
         # weapon switching

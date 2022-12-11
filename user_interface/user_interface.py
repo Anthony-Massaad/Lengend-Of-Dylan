@@ -2,7 +2,7 @@ from enum import Enum
 
 import pygame
 
-from constants import CharacterInfo, Font, FontSize, Color, GAME_HEIGHT, weapon_images_path, PlayerWeapons, magic_path, PlayerMagics, PlayerUtilNames
+from constants import StatsName, Font, FontSize, Color, GAME_HEIGHT, weapon_images_path, PlayerWeapons, magic_path, PlayerMagics, PlayerUtilNames
 
 
 class UISettings(Enum):
@@ -81,9 +81,9 @@ class UserInterface:
         self.screen.blit(magic_image, magic_image.get_rect(center=rect.center))
 
     def draw(self, player):
-        self.draw_bar(player.current_stats[CharacterInfo.HEALTH.value], player.max_stats[CharacterInfo.HEALTH.value],
+        self.draw_bar(player.current_stats[StatsName.HEALTH.value], player.max_stats[StatsName.HEALTH.value],
                       self.health_bar, Color.GREEN.value, True)
-        self.draw_bar(player.current_stats[CharacterInfo.MANA.value], player.max_stats[CharacterInfo.MANA.value],
+        self.draw_bar(player.current_stats[StatsName.MANA.value], player.max_stats[StatsName.MANA.value],
                       self.mana_bar, Color.BLUE.value, False)
 
         if player.last_util_switch == PlayerUtilNames.MAGIC:

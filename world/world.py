@@ -1,4 +1,5 @@
 import pygame
+import random
 
 from constants import *
 from entities.player.player import Player
@@ -6,7 +7,7 @@ from logger.log import Log
 from sprites.sprites import GameObjects
 from support_functions.support_functions import SupportFunctions
 from user_interface.user_interface import UserInterface
-
+from entities.enemy.enemy import Enemy
 
 class RoomView(pygame.sprite.Group):
     """the view of the game, which inherits from pygame Group
@@ -53,7 +54,8 @@ class World:
         self.display_surface = pygame.display.get_surface()
         self.terrain_data = self.generate_terrain_data(terrain)
         self.graphics = {
-            'objects': SupportFunctions.import_folder('graphics/objects')
+            'objects': SupportFunctions.import_folder('graphics/map/objects'),
+            'grass': SupportFunctions.import_folder('graphics/map/grass')
         }
         Log.info("game graphics imported")
         # all objects in the game 
@@ -80,13 +82,28 @@ class World:
                     if col == '-1':
                         continue
                     if style == 'bounds':
-                        GameObjects((x, y), [self.obstacle_sprites], 'invisible')
+                        GameObjects((x, y), [self.obstacle_sprites], SpriteType.INVISIBLE)
                     elif style == 'objects':
-                        GameObjects((x, y), [self.visible_sprites, self.obstacle_sprites], 'object',
+                        GameObjects((x, y), [self.visible_sprites, self.obstacle_sprites], SpriteType.OBJECT,
                                     self.graphics['objects'][int(col)])
+                    elif style == 'grass':
+                        GameObjects((x, y), [self.visible_sprites, self.obstacle_sprites], SpriteType.GRASS, self.graphics['grass'][int(col)])
+                    elif style == 'entities':
+                        if col == '394':
+                            # entity is player
+                            self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites)
+                        else:
+                            monster_name = ""
+                            if col == '392': monster_name = "raccoon"
+                            elif col == "391": monster_name = "spirit"
+
+                            if monster_name == "": Log.error("MONSTER NAME UNKNOWN")
+
+                            Enemy(monster_name, (x, y), [self.visible_sprites], self.obstacle_sprites)
+
+
         Log.info("game terrain setup complete")
 
-        self.player = Player((700, 1000), [self.visible_sprites], self.obstacle_sprites, self.display_surface)
         Log.info("player setup complete")
 
         Log.info("game setup complete")

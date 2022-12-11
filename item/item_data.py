@@ -1,4 +1,4 @@
-from constants import CharacterInfo
+from constants import StatsName
 
 
 class ItemData:
@@ -6,10 +6,10 @@ class ItemData:
     @classmethod
     def generate_dict_info(cls, health: int, defense: int, attack: int, stamina: int):
         return {
-            CharacterInfo.HEALTH.value: health,
-            CharacterInfo.DEFENSE.value: defense,
-            CharacterInfo.ATTACK.value: attack,
-            CharacterInfo.MANA.value: stamina
+            StatsName.HEALTH.value: health,
+            StatsName.DEFENSE.value: defense,
+            StatsName.ATTACK.value: attack,
+            StatsName.MANA.value: stamina
         }
 
     @classmethod

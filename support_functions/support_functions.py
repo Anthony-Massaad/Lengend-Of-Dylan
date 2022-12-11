@@ -47,7 +47,31 @@ class SupportFunctions:
             for image in img_files:
                 full_path = path + "/" + image
                 image_surface = pygame.image.load(full_path).convert_alpha()
-                image_surface = pygame.transform.scale(image_surface, (TILE_SIZE, TILE_SIZE))
+                # image_surface = pygame.transform.scale(image_surface, (TILE_SIZE, TILE_SIZE))
+                image_surface_list.append(image_surface)
+
+        return image_surface_list
+
+    @classmethod
+    def import_entity_folder(cls, path: str, scale: tuple) -> list:
+        """collect all the images given a directory path, add them to a pygame surface and return a list
+
+        Args:
+            path (str): the file path where all the images for a given movement is located
+            scale (tuple): image scale
+
+        Returns:
+            list: list of the image surface for a given movement of the character
+        """
+        image_surface_list = []
+        # print(path)
+        for folder in walk(path):
+            img_files = folder[2]
+            # print(img_files)
+            for image in img_files:
+                full_path = path + "/" + image
+                image_surface = pygame.image.load(full_path).convert_alpha()
+                image_surface = pygame.transform.scale(image_surface, scale)
                 image_surface_list.append(image_surface)
 
         return image_surface_list

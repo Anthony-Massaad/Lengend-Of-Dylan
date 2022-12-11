@@ -1,14 +1,43 @@
 from enum import Enum
 
-GAME_WIDTH = GAME_HEIGHT = 595
+GAME_WIDTH = GAME_HEIGHT = 800
 
 INVEN_ITEM_BASE_X = 75
 INVEN_ITEM_BASE_Y = 75
 TILE_SIZE = 64
+
+class FilePath(Enum):
+    character_path = 'graphics/character'
+    monsters = 'graphics/enemies/monsters'
+
 weapon_images_path = 'graphics/character/weapons'
 magic_path = 'graphics/character/magic'
 
-# SQUARE_DISTANCE = GAME_WIDTH // 17
+class SpriteType(Enum):
+    OBJECT = "object"
+    INVISIBLE = "invisible"
+    ENEMY = "enemy"
+    GRASS = 'grass'
+
+class StatsName(Enum):
+    HEALTH = 'health'
+    MANA = 'mana'
+    DEFENSE = 'defense'
+    ATTACK = 'attack'
+    MANA_ATTACK = 'mana_attack'
+    SPEED = "speed"
+    ATTACK_TYPE = "attack_type"
+    RESISTANCE = "resistance"
+    ATTACK_RADIUS = "attack_radius"
+    NOTICE_RADIUS = "notice_radius"
+
+# Enemy Data
+
+
+enemy_data = {
+    'raccoon': {StatsName.HEALTH.value: 300, StatsName.DEFENSE.value: 25, StatsName.ATTACK.value: [40], StatsName.ATTACK_TYPE.value: ['claw'], StatsName.SPEED.value: 180, StatsName.RESISTANCE.value: 3, StatsName.ATTACK_RADIUS.value: 120, StatsName.NOTICE_RADIUS.value: 300},
+    'spirit': {StatsName.HEALTH.value: 100, StatsName.DEFENSE.value: 5, StatsName.ATTACK.value: [8], StatsName.ATTACK_TYPE.value: ['thunder'], StatsName.SPEED.value: 270, StatsName.RESISTANCE.value: 3, StatsName.ATTACK_RADIUS.value: 60, StatsName.NOTICE_RADIUS.value: 250},
+}
 
 
 class PlayerUtilNames(Enum):
@@ -51,14 +80,6 @@ class Color(Enum):
     ORANGE = (252, 163, 0)
     GREY = (168, 168, 168)
     GOLD = (255, 215, 0)
-
-
-class CharacterInfo(Enum):
-    HEALTH = 'health'
-    MANA = 'mana'
-    DEFENSE = 'defense'
-    ATTACK = 'attack'
-    MANA_ATTACK = 'mana_attack'
 
 
 class CollisionName(Enum):
