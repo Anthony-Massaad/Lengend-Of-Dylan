@@ -2,7 +2,7 @@ from enum import Enum
 
 import pygame
 
-from constants import StatsName, ItemName, CollisionName, PlayerWeapons, PlayerMagics, PlayerUtilNames, FilePath
+from constants import StatsName, ItemName, entity_data, PlayerWeapons, PlayerMagics, PlayerUtilNames, FilePath
 from inventory.inventory import Inventory
 from item.item import Item
 from item.item_data import ItemData
@@ -34,18 +34,8 @@ class DataConstant(Enum):
 
 class Player(Entity):
 
-    def __init__(self, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group):
-        super().__init__(group)
-        # Player stats
-        self.current_stats = {
-            StatsName.HEALTH.value: 100,
-            StatsName.DEFENSE.value: 25,
-            StatsName.ATTACK.value: 25,
-            StatsName.MANA_ATTACK.value: 5,
-            StatsName.MANA.value: 100,
-            StatsName.SPEED.value: 300
-        }
-
+    def __init__(self, sprite_name, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group):
+        super().__init__(group, game_obstacle_sprites, position, Movement, FilePath.character_path.value, sprite_name)
         self.max_stats = {
             StatsName.HEALTH.value: 100,
             StatsName.MANA.value: 100
@@ -55,22 +45,6 @@ class Player(Entity):
             PlayerMagics.FLAME.value: {DataConstant.STRENGTH: 5, DataConstant.COST: 55},
             PlayerMagics.HEAL.value: {DataConstant.STRENGTH: 25, DataConstant.COST: 35}
         }
-
-        # get the basic graphics of the player
-        for movement in Movement:
-            self.animations[movement.value] = []
-        Log.info(f"Player Animations dictionary is {self.animations}")
-        self.import_graphics(FilePath.character_path.value)
-        self.movement_status = Movement.DOWN_IDLE.value
-        self.game_obstacle_sprites = game_obstacle_sprites
-
-        # image of the sprite (width, height)
-        self.image = self.animations[self.movement_status][self.frame_index]
-        self.rect = self.image.get_rect(topleft=position)
-        self.hitbox = self.rect.inflate(0, -20)
-
-        # vector direction as x = 0, y = 0
-        self.position = pygame.math.Vector2(self.rect.topleft)
 
         ### BEGINNING OF UTILS ###
         self.util_switch_direction = 1
@@ -98,7 +72,6 @@ class Player(Entity):
             PlayerMagics.HEAL.value: Timer(200, self.use_magic)
         }
         ### END OF UTILS ###
-
         self.mana_regen_timer = Timer(350, self.mana_regeneration)
 
         # inventory

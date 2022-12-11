@@ -1,13 +1,40 @@
 import pygame
-from constants import StatsName, CollisionName
+
+from constants import StatsName, CollisionName, entity_data, FilePath
 from support_functions.support_functions import SupportFunctions
+from logger.log import Log
 import abc
+
+
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, groups: pygame.sprite.Group):
+    def __init__(self, groups: pygame.sprite.Group, obstacle_sprites, pos, movement, folder_path, sprite_name):
         super().__init__(groups)
+        self.current_stats = entity_data[sprite_name]
+        Log.debug(f"{sprite_name} stats dictionary is {self.current_stats}")
         self.frame_index = 0
-        self.direction = pygame.math.Vector2()
+
+        # import animation for relative sprite
         self.animations = {}
+        for movement_name in movement:
+            self.animations[movement_name.value] = []
+        Log.debug(f"{sprite_name} Animations dictionary is {self.animations}")
+        self.import_graphics(folder_path)
+
+        # set default status for enemy or player
+        if sprite_name == "player":
+            self.movement_status = movement.DOWN_IDLE.value
+        else:
+            self.movement_status = movement.IDLE.value
+
+        # graphic_setup
+        self.image = self.animations[self.movement_status][self.frame_index]
+        self.rect = self.image.get_rect(topleft=pos)
+        self.hitbox = self.rect.inflate(0, -20)
+
+        self.position = pygame.math.Vector2(self.rect.topleft)
+        self.game_obstacle_sprites = obstacle_sprites
+        self.direction = pygame.math.Vector2()
+
     def move(self, delta_time: float):
         # default the vector so diagonal is the same
         if self.direction.magnitude() > 0:

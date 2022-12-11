@@ -91,13 +91,16 @@ class World:
                     elif style == 'entities':
                         if col == '394':
                             # entity is player
-                            self.player = Player((x, y), [self.visible_sprites], self.obstacle_sprites)
+                            self.player = Player("player", (x, y), [self.visible_sprites], self.obstacle_sprites)
                         else:
                             monster_name = ""
-                            if col == '392': monster_name = "raccoon"
-                            elif col == "391": monster_name = "spirit"
+                            if col == '392':
+                                monster_name = "raccoon"
+                            elif col == "391":
+                                monster_name = "spirit"
 
-                            if monster_name == "": Log.error("MONSTER NAME UNKNOWN")
+                            if monster_name == "":
+                                Log.error("MONSTER NAME UNKNOWN")
 
                             Enemy(monster_name, (x, y), [self.visible_sprites], self.obstacle_sprites)
 
