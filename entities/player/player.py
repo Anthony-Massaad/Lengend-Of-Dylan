@@ -43,7 +43,7 @@ class Player(Entity):
 
         self.magic_data = {
             PlayerMagics.FLAME.value: {DataConstant.STRENGTH: 5, DataConstant.COST: 55},
-            PlayerMagics.HEAL.value: {DataConstant.STRENGTH: 25, DataConstant.COST: 35}
+            PlayerMagics.HEAL.value: {DataConstant.STRENGTH: 15, DataConstant.COST: 10}
         }
 
         ### BEGINNING OF UTILS ###
@@ -66,21 +66,21 @@ class Player(Entity):
         self.selected_magic = self.magics[self.magic_index]
         self.magic_switch_timer = Timer(200, lambda direction: self.switch_magic(direction))
         # utils timer
-        self.util_timers = {
-            PlayerWeapons.SWORD.value: Timer(300, self.use_weapon),
-            PlayerMagics.FLAME.value: Timer(200, self.use_magic),
-            PlayerMagics.HEAL.value: Timer(200, self.use_magic)
+        self.magic_timers = {
+            PlayerMagics.FLAME.value: Timer(1000, self.allow_magic),
+            PlayerMagics.HEAL.value: Timer(800, self.allow_magic)
         }
+        self.magic_invoked = False
+        self.attack_cooldown = Timer(125)
         ### END OF UTILS ###
         self.mana_regen_timer = Timer(350, self.mana_regeneration)
-
         # inventory
         self.inventory = Inventory()
         self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
 
     def controls(self):
         keys = pygame.key.get_pressed()
-        if self.util_timers[self.selected_weapon].active:
+        if self.is_attacking:
             return
         # check inven active 
         # if keys[pygame.K_l] and InventoryGUI.inventory_triggered:
@@ -109,21 +109,24 @@ class Player(Entity):
         else:
             self.direction.x = 0
 
-        if self.util_timers[self.selected_magic].active:
+        if self.magic_invoked:
             return
 
         # weapon invoked
-        if keys[pygame.K_k]:
+        if keys[pygame.K_k] and not self.attack_cooldown.active:
             Log.info(f"Player attack invoked using {self.selected_weapon}")
-            self.util_timers[self.selected_weapon].start_timer()
+            self.is_attacking = True
+            self.use_weapon()
             # reset the direction when using a weapon and the player index
             self.direction = pygame.math.Vector2()
             self.frame_index = 0
 
         # magic invoked
-        if keys[pygame.K_i]:
+        if keys[pygame.K_i] and not self.magic_timers[self.selected_magic].active:
             Log.info(f"Player Magic invoked using {self.selected_magic}")
-            self.util_timers[self.selected_magic].start_timer()
+            self.magic_invoked = True
+            self.use_magic()
+            self.magic_timers[self.selected_magic].start_timer()
             self.direction = pygame.math.Vector2()
             self.frame_index = 0
 
@@ -161,8 +164,8 @@ class Player(Entity):
         #     print("magic_triggered")
 
     def update_timers(self):
-        self.util_timers[self.selected_weapon].trigger_action()
-        self.util_timers[self.selected_magic].trigger_action()
+        self.attack_cooldown.cooldown()
+        self.magic_timers[self.selected_magic].cooldown()
         self.weapon_switch_timer.change_util(self.util_switch_direction)
         self.magic_switch_timer.change_util(self.util_switch_direction)
         self.mana_regen_timer.mana_regeneration()
@@ -214,6 +217,9 @@ class Player(Entity):
             self.weapon_index = len(self.weapons) - 1
         Log.debug(f"Current weapon is {self.weapons[self.weapon_index]}")
 
+    def allow_magic(self):
+        self.magic_invoked = False
+
     def use_weapon(self):
         direction = self.movement_status.split('_')[0]
         Log.info(f"Direction of attack is {direction}")
@@ -231,16 +237,15 @@ class Player(Entity):
         if self.current_stats[StatsName.MANA.value] > self.max_stats[StatsName.MANA.value]:
             self.current_stats[StatsName.MANA.value] = self.max_stats[StatsName.MANA.value]
 
-        Log.info(f"Mana regenerating. Current {self.current_stats[StatsName.MANA.value]}")
+        Log.debug(f"Mana regenerating. Current {self.current_stats[StatsName.MANA.value]}")
 
     def animate_entity(self, delta_time: float):
-        if self.util_timers[self.selected_weapon].active:
-            self.frame_index += 12 * delta_time
-            Log.debug(f"Player frame on hit {int(self.frame_index)}")
-        else:
-            self.frame_index += 4 * delta_time
-
+        self.frame_index += 4 * delta_time * 2
         if self.frame_index >= len(self.animations[self.movement_status]):
+            if self.is_attacking:
+                self.is_attacking = False
+                self.attack_cooldown.start_timer()
+
             self.frame_index = 0
         self.image = self.animations[self.movement_status][int(self.frame_index)]
 
@@ -252,7 +257,7 @@ class Player(Entity):
         if self.direction.magnitude() == 0:
             self.movement_status = self.add_action_to_respected_status("_idle")
 
-        if self.util_timers[PlayerWeapons.SWORD.value].active:
+        if self.is_attacking:
             self.movement_status = self.add_action_to_respected_status(f'_{self.selected_weapon}_swing')
 
     def update(self, delta_time: float):

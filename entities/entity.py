@@ -35,6 +35,8 @@ class Entity(pygame.sprite.Sprite):
         self.game_obstacle_sprites = obstacle_sprites
         self.direction = pygame.math.Vector2()
 
+        self.is_attacking = False
+
     def move(self, delta_time: float):
         # default the vector so diagonal is the same
         if self.direction.magnitude() > 0:

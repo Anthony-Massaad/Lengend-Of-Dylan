@@ -83,3 +83,13 @@ class Timer:
         if current_time - self.start_time >= self.duration:
             self.stop_timer()
             self.is_mana_regen = True
+
+    def cooldown(self):
+        if not self.active:
+            return
+
+        current_time = pygame.time.get_ticks()
+        if current_time - self.start_time >= self.duration:
+            self.stop_timer()
+            if self.function:
+                self.function()
