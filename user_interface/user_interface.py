@@ -15,7 +15,6 @@ class UISettings(Enum):
     MANA_WIDTH = 180
     SELECTION_BOX_SIZE = 80
     UI_BACKGROUND_COLOR = (34, 34, 34)
-    UI_BACKGROUND_COLOR_DIMMED = (255,0,0, 128)
     UI_BORDER_COLOR = (17, 17, 17)
     HEALTH_BAR_Y = 10
     UTIL_BOX_SIZE = 80
@@ -80,11 +79,6 @@ class UserInterface:
         rect = self.draw_utils_rect(10, GAME_HEIGHT - 90, is_switching_utils)
         weapon_image = self.weapon_images[weapon_index]
         self.screen.blit(weapon_image, weapon_image.get_rect(center=rect.center))
-
-        # for dimmed color to show inactive
-        # border_color = Color.GOLD.value if is_switching_utils else UISettings.UI_BORDER_COLOR.value
-        # pygame.draw.rect(self.screen, UISettings.UI_BACKGROUND_COLOR_DIMMED.value, rect, 0, UISettings.UTIL_BOX_SIZE.value)
-        # pygame.draw.rect(self.screen, border_color, rect, 3, UISettings.UTIL_BOX_SIZE.value)
 
     def magic_ui(self, magic_index, is_switching_utils):
         rect = self.draw_utils_rect(75, GAME_HEIGHT - 90, is_switching_utils)
