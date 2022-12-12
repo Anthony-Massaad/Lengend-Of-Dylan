@@ -34,6 +34,10 @@ class Enemy(Entity):
         self.image = self.animations[self.movement_status][int(self.frame_index)]
 
     def status(self, player):
+        if self.attack_timer.active:
+            self.direction = pygame.math.Vector2()
+            return
+
         if self.movement_status == Movement.ATTACK.value:
             self.attack_timer.start_timer()
         elif self.movement_status == Movement.MOVE.value:
@@ -61,8 +65,6 @@ class Enemy(Entity):
 
     def update_movement_status(self, player):
         distance_to_player = self.get_distance_to_player(player)
-
-
 
         if distance_to_player <= self.current_stats[StatsName.ATTACK_RADIUS.value]:
             self.movement_status = Movement.ATTACK.value

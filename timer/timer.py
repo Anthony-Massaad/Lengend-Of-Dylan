@@ -70,7 +70,6 @@ class Timer:
         if current_time - self.start_time >= self.duration:
             self.stop_timer()
             self.action_performed = False
-            Log.debug(f"Timer stopped")
 
     def mana_regeneration(self):
         if not self.active:
@@ -80,7 +79,7 @@ class Timer:
             self.function()
             self.is_mana_regen = False
 
-        current_time = self.get_pygame_time()
+        current_time = pygame.time.get_ticks()
         if current_time - self.start_time >= self.duration:
             self.stop_timer()
             self.is_mana_regen = True
