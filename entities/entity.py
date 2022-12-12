@@ -3,6 +3,8 @@ import pygame
 from constants import StatsName, CollisionName, entity_data, FilePath
 from support_functions.support_functions import SupportFunctions
 from logger.log import Log
+from timer.timer import Timer
+
 import abc
 
 
@@ -36,6 +38,7 @@ class Entity(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2()
 
         self.is_attacking = False
+        self.attack_cooldown = Timer(self.current_stats[StatsName.ATTACK_COOLDOWN.value])
 
     def move(self, delta_time: float):
         # default the vector so diagonal is the same

@@ -3,13 +3,13 @@ from enum import Enum
 
 from constants import FilePath, StatsName
 from entities.entity import Entity
-from timer.timer import Timer
-from logger.log import Log
+
 
 class Movement(Enum):
     IDLE = 'idle'
     ATTACK = 'attack'
     MOVE = 'move'
+
 
 class Enemy(Entity):
 
@@ -17,32 +17,31 @@ class Enemy(Entity):
         super().__init__(groups, obstacle_sprites, pos, Movement, FilePath.monsters.value + "/" + sprite_name, sprite_name)
         self.sprite_type = "enemy"
 
-        # create timer for enemy attack for cooldown
-        self.attack_timer = Timer(self.current_stats[StatsName.ATTACK_COOLDOWN.value], self.attack)
-
-
     def attack(self):
         return
 
     def update_timers(self):
-        self.attack_timer.trigger_action()
+        self.attack_cooldown.cooldown()
 
     def animate_entity(self, delta_time: float):
         self.frame_index += 4 * delta_time
         if self.frame_index >= len(self.animations[self.movement_status]):
+            if self.is_attacking:
+                self.is_attacking = False
+                self.attack_cooldown.start_timer()
             self.frame_index = 0
         self.image = self.animations[self.movement_status][int(self.frame_index)]
 
     def status(self, player):
-        if self.attack_timer.active:
-            self.direction = pygame.math.Vector2()
-            return
 
-        if self.movement_status == Movement.ATTACK.value:
-            self.attack_timer.start_timer()
+        if self.movement_status == Movement.ATTACK.value and not self.attack_cooldown.active:
+            self.is_attacking = True
+            self.direction = pygame.math.Vector2()
+            self.attack()
         elif self.movement_status == Movement.MOVE.value:
             self.direction = self.get_direction_to_player(player)
         else:
+            self.movement_status = Movement.MOVE.value
             self.direction = pygame.math.Vector2()
 
     def get_distance_to_player(self, player):

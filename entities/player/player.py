@@ -2,12 +2,11 @@ from enum import Enum
 
 import pygame
 
-from constants import StatsName, ItemName, entity_data, PlayerWeapons, PlayerMagics, PlayerUtilNames, FilePath
+from constants import StatsName, ItemName, PlayerWeapons, PlayerMagics, PlayerUtilNames, FilePath
 from inventory.inventory import Inventory
 from item.item import Item
 from item.item_data import ItemData
 from logger.log import Log
-from support_functions.support_functions import SupportFunctions
 from timer.timer import Timer
 from entities.entity import Entity
 
@@ -71,7 +70,6 @@ class Player(Entity):
             PlayerMagics.HEAL.value: Timer(800, self.allow_magic)
         }
         self.magic_invoked = False
-        self.attack_cooldown = Timer(125)
         ### END OF UTILS ###
         self.mana_regen_timer = Timer(350, self.mana_regeneration)
         # inventory
