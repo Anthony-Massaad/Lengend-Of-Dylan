@@ -45,8 +45,7 @@ class RoomView(pygame.sprite.Group):
             offset = sprite.rect.topleft - self.view_offset
             self.display_surface.blit(sprite.image, offset)
 
-    def enemy_update(self, player):
-        enemies = [sprite for sprite in self.sprites() if hasattr(sprite, 'sprite_type') and sprite.sprite_type == "enemy"]
+    def enemy_update(self, player, enemies):
         for enemy in enemies:
             enemy.enemy_update(player)
 
@@ -55,6 +54,7 @@ class World:
         """World initialization, setup and main game run
         """
         # get the surface that is generated in game
+
         self.display_surface = pygame.display.get_surface()
         self.terrain_data = self.generate_terrain_data(terrain)
         self.graphics = {
@@ -66,8 +66,11 @@ class World:
         self.visible_sprites = RoomView()
         self.obstacle_sprites = RoomView()
         self.player = None
+        self.enemies = None
         self.setup()
         self.user_interface = UserInterface()
+
+        # self.enemies = []
 
     def generate_terrain_data(self, terrain: dict) -> dict:
         data = {}
@@ -108,6 +111,9 @@ class World:
 
                             Enemy(monster_name, (x, y), [self.visible_sprites], self.obstacle_sprites)
 
+        self.enemies = [sprite for sprite in self.visible_sprites.sprites() if hasattr(sprite, 'sprite_type') and sprite.sprite_type == "enemy"]
+        if not self.enemies:
+            Log.warning("No enemies in the map")
 
         Log.info("game terrain setup complete")
 
@@ -123,7 +129,7 @@ class World:
             delta_time (float): the game clock for independent fps
         """
         self.display_surface.fill(Color.BLACK.value)
-        self.visible_sprites.enemy_update(self.player)
+        self.visible_sprites.enemy_update(self.player, self.enemies)
         self.visible_sprites.update(delta_time)
         self.visible_sprites.draw_room(self.player)
-        self.user_interface.draw(self.player)
+        self.user_interface.draw(self.player, self.enemies)
