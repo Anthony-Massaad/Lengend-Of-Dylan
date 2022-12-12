@@ -31,13 +31,14 @@ class StatsName(Enum):
     ATTACK_RADIUS = "attack_radius"
     NOTICE_RADIUS = "notice_radius"
     ATTACK_COOLDOWN = "attack_cooldown"
+    MAX_HEALTH = "max_health"
 
 # Enemy Data
 
 
 entity_data = {
-    'raccoon': {StatsName.HEALTH.value: 300, StatsName.DEFENSE.value: 25, StatsName.ATTACK.value: 40, StatsName.ATTACK_TYPE.value: 'claw', StatsName.ATTACK_COOLDOWN.value: 320, StatsName.SPEED.value: 180, StatsName.RESISTANCE.value: 3, StatsName.ATTACK_RADIUS.value: 50, StatsName.NOTICE_RADIUS.value: 300},
-    'spirit': {StatsName.HEALTH.value: 100, StatsName.DEFENSE.value: 5, StatsName.ATTACK.value: 8, StatsName.ATTACK_TYPE.value: 'thunder', StatsName.ATTACK_COOLDOWN.value: 125, StatsName.SPEED.value: 270, StatsName.RESISTANCE.value: 3, StatsName.ATTACK_RADIUS.value: 50, StatsName.NOTICE_RADIUS.value: 250},
+    'raccoon': {StatsName.HEALTH.value: 300, StatsName.MAX_HEALTH.value: 300, StatsName.DEFENSE.value: 25, StatsName.ATTACK.value: 40, StatsName.ATTACK_TYPE.value: 'claw', StatsName.ATTACK_COOLDOWN.value: 320, StatsName.SPEED.value: 180, StatsName.RESISTANCE.value: 3, StatsName.ATTACK_RADIUS.value: 50, StatsName.NOTICE_RADIUS.value: 300},
+    'spirit': {StatsName.HEALTH.value: 100, StatsName.MAX_HEALTH.value: 100, StatsName.DEFENSE.value: 5, StatsName.ATTACK.value: 8, StatsName.ATTACK_TYPE.value: 'thunder', StatsName.ATTACK_COOLDOWN.value: 125, StatsName.SPEED.value: 270, StatsName.RESISTANCE.value: 3, StatsName.ATTACK_RADIUS.value: 50, StatsName.NOTICE_RADIUS.value: 250},
     'player': {StatsName.HEALTH.value: 25, StatsName.DEFENSE.value: 25, StatsName.ATTACK.value: 25, StatsName.MANA_ATTACK.value: 5, StatsName.ATTACK_COOLDOWN.value: 125, StatsName.MANA.value: 100, StatsName.SPEED.value: 500}
 }
 

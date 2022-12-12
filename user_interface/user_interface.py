@@ -2,12 +2,16 @@ from enum import Enum
 
 import pygame
 
-from constants import StatsName, Font, FontSize, Color, GAME_HEIGHT, weapon_images_path, PlayerWeapons, magic_path, PlayerMagics, PlayerUtilNames
+from constants import StatsName, Font, FontSize, Color, GAME_WIDTH, GAME_HEIGHT, weapon_images_path, PlayerWeapons, magic_path, PlayerMagics, PlayerUtilNames
 
 
 class UISettings(Enum):
     BAR_HEIGHT = 15
     HEALTH_WIDTH = 200
+
+    ENEMY_HEALTH_WIDTH = 50
+    ENEMY_BAR_HEIGHT = 5
+
     MANA_WIDTH = 180
     SELECTION_BOX_SIZE = 80
     UI_BACKGROUND_COLOR = (34, 34, 34)
@@ -24,7 +28,7 @@ class UserInterface:
         # change to pygame.font.Font when finding font
         self.font = pygame.font.SysFont(Font.ARIAL.value, FontSize.size_18.value)
 
-        # bars
+        # player bars
         self.health_bar = pygame.Rect(10, UISettings.HEALTH_BAR_Y.value, UISettings.HEALTH_WIDTH.value,
                                       UISettings.BAR_HEIGHT.value)
         self.mana_bar = pygame.Rect(10, UISettings.HEALTH_BAR_Y.value + UISettings.BAR_HEIGHT.value + 1,
@@ -42,7 +46,7 @@ class UserInterface:
             full_path = f"{magic_path}/{magic_name.value}/{magic_name.value}.png"
             self.magic_images.append(pygame.image.load(full_path).convert_alpha())
 
-    def draw_bar(self, current_value, max_value, rect, color, is_health_bar):
+    def draw_bar(self, current_value, max_value, rect, color, is_health_bar, is_player):
         # Drawing background of the bar Might delete
         pygame.draw.rect(self.screen, UISettings.UI_BACKGROUND_COLOR.value, rect)
 
@@ -60,7 +64,8 @@ class UserInterface:
         # drawing the bar
         pygame.draw.rect(self.screen, color, bar_rect)
         # drawing the border
-        pygame.draw.rect(self.screen, UISettings.UI_BORDER_COLOR.value, rect, 3)
+        border_width = 3 if is_player else 1
+        pygame.draw.rect(self.screen, UISettings.UI_BORDER_COLOR.value, rect, border_width)
 
     def draw_utils_rect(self, x, y, is_switching_utils):
         rect = pygame.Rect(x, y, UISettings.UTIL_BOX_SIZE.value, UISettings.UTIL_BOX_SIZE.value)
@@ -88,9 +93,9 @@ class UserInterface:
 
     def draw(self, player, enemies):
         self.draw_bar(player.current_stats[StatsName.HEALTH.value], player.max_stats[StatsName.HEALTH.value],
-                      self.health_bar, Color.GREEN.value, True)
+                      self.health_bar, Color.GREEN.value, True, True)
         self.draw_bar(player.current_stats[StatsName.MANA.value], player.max_stats[StatsName.MANA.value],
-                      self.mana_bar, Color.BLUE.value, False)
+                      self.mana_bar, Color.BLUE.value, False, True)
 
         if player.last_util_switch == PlayerUtilNames.MAGIC:
             self.weapon_ui(player.weapon_index, player.weapon_switch_timer.active)
@@ -98,3 +103,11 @@ class UserInterface:
         elif player.last_util_switch == PlayerUtilNames.WEAPON:
             self.magic_ui(player.magic_index, player.magic_switch_timer.active)
             self.weapon_ui(player.weapon_index, player.weapon_switch_timer.active)
+
+        for enemy in enemies:
+            # Health bar offset is respective to the player
+            health_bar_offset_x = enemy.rect.topleft[0] - (player.rect.centerx - (GAME_WIDTH // 2)) + 7
+            health_bar_offset_y = enemy.rect.topleft[1] - (player.rect.centery - (GAME_WIDTH // 2)) - 5
+            self.draw_bar(enemy.current_stats[StatsName.HEALTH.value], enemy.current_stats[StatsName.MAX_HEALTH.value],
+                          pygame.Rect(health_bar_offset_x, health_bar_offset_y, UISettings.ENEMY_HEALTH_WIDTH.value,
+                                      UISettings.ENEMY_BAR_HEIGHT.value), Color.GREEN.value, True, False)

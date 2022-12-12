@@ -22,10 +22,8 @@ class RoomView(pygame.sprite.Group):
         self.half_width = GAME_WIDTH // 2
         self.half_height = GAME_HEIGHT // 2
         self.view_offset = pygame.math.Vector2()
-        self.ground = pygame.image.load("graphics/map/starting_room.png").convert()
-        self.ground_rect = self.ground.get_rect(topleft=(0, 0))
 
-    def draw_room(self, player: Player) -> None:
+    def draw_room(self, player: Player, map, map_rect) -> None:
         """draw the game room with all the sprites
 
         Args:
@@ -37,9 +35,10 @@ class RoomView(pygame.sprite.Group):
         self.view_offset.y = player.rect.centery - self.half_height
         Log.debug(f"Offset for game (x: {self.view_offset.x}, y: {self.view_offset.y})")
         # drawing floor as first thing to draw
-        ground_offset = self.ground_rect.topleft - self.view_offset
+
+        ground_offset = map_rect.topleft - self.view_offset
         Log.debug(f"Offset for map {ground_offset}")
-        self.display_surface.blit(self.ground, ground_offset)
+        self.display_surface.blit(map, ground_offset)
 
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
             offset = sprite.rect.topleft - self.view_offset
@@ -67,6 +66,8 @@ class World:
         self.obstacle_sprites = RoomView()
         self.player = None
         self.enemies = None
+        self.map = None
+        self.map_rect = None
         self.setup()
         self.user_interface = UserInterface()
 
@@ -82,6 +83,7 @@ class World:
     def setup(self) -> None:
         """Create the world setup
         """
+
         for style, layout in self.terrain_data.items():
             for row_index, row in enumerate(layout):
                 for col_index, col in enumerate(row):
@@ -111,7 +113,13 @@ class World:
 
                             Enemy(monster_name, (x, y), [self.visible_sprites], self.obstacle_sprites)
 
+
         self.enemies = [sprite for sprite in self.visible_sprites.sprites() if hasattr(sprite, 'sprite_type') and sprite.sprite_type == "enemy"]
+
+        # add string to terrain data
+        self.map = pygame.image.load("graphics/map/starting_room.png").convert()
+        self.map_rect = self.map.get_rect(topleft=(0, 0))
+
         if not self.enemies:
             Log.warning("No enemies in the map")
 
@@ -131,5 +139,5 @@ class World:
         self.display_surface.fill(Color.BLACK.value)
         self.visible_sprites.enemy_update(self.player, self.enemies)
         self.visible_sprites.update(delta_time)
-        self.visible_sprites.draw_room(self.player)
+        self.visible_sprites.draw_room(self.player, self.map, self.map_rect)
         self.user_interface.draw(self.player, self.enemies)
