@@ -1,8 +1,9 @@
 import pygame
 from enum import Enum
 
-from constants import  entity_data, SpriteType, FilePath
+from constants import FilePath, StatsName
 from entities.entity import Entity
+from timer.timer import Timer
 from logger.log import Log
 
 class Movement(Enum):
@@ -14,11 +15,68 @@ class Enemy(Entity):
 
     def __init__(self, sprite_name, pos, groups: pygame.sprite.Group, obstacle_sprites):
         super().__init__(groups, obstacle_sprites, pos, Movement, FilePath.monsters.value + "/" + sprite_name, sprite_name)
+        self.sprite_type = "enemy"
+
+        # create timer for enemy attack for cooldown
+        self.attack_timer = Timer(self.current_stats[StatsName.ATTACK_COOLDOWN.value], self.attack)
 
 
-    def animate_entity(self):
-        pass
+    def attack(self):
+        return
+
+    def update_timers(self):
+        self.attack_timer.trigger_action()
+
+    def animate_entity(self, delta_time: float):
+        self.frame_index += 4 * delta_time
+        if self.frame_index >= len(self.animations[self.movement_status]):
+            self.frame_index = 0
+        self.image = self.animations[self.movement_status][int(self.frame_index)]
+
+    def status(self, player):
+        if self.movement_status == Movement.ATTACK.value:
+            self.attack_timer.start_timer()
+        elif self.movement_status == Movement.MOVE.value:
+            self.direction = self.get_direction_to_player(player)
+        else:
+            self.direction = pygame.math.Vector2()
+
+    def get_distance_to_player(self, player):
+        enemy_vector = pygame.math.Vector2(self.rect.center)
+        player_vec = pygame.math.Vector2(player.rect.center)
+        return (player_vec - enemy_vector).magnitude()  # Convert vector to distance
+
+    def get_direction_to_player(self, player):
+        enemy_vector = pygame.math.Vector2(self.rect.center)
+        player_vec = pygame.math.Vector2(player.rect.center)
+
+        distance = self.get_distance_to_player(player)
+        # direction is 0,0 by default unless movement is needed
+        direction = pygame.math.Vector2()
+        if distance > 0:
+            # converts vector to 1 or -1 depending on the direction of the vector
+            direction = (player_vec - enemy_vector).normalize()
+
+        return direction
+
+    def update_movement_status(self, player):
+        distance_to_player = self.get_distance_to_player(player)
+
+
+
+        if distance_to_player <= self.current_stats[StatsName.ATTACK_RADIUS.value]:
+            self.movement_status = Movement.ATTACK.value
+        elif distance_to_player <= self.current_stats[StatsName.NOTICE_RADIUS.value]:
+            self.movement_status = Movement.MOVE.value
+        else:
+            self.movement_status = Movement.IDLE.value
 
     def update(self, delta_time: float):
         self.move(delta_time)
+        self.animate_entity(delta_time)
+        self.update_timers()
+
+    def enemy_update(self, player):
+        self.update_movement_status(player)
+        self.status(player)
 

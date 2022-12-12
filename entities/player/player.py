@@ -67,7 +67,7 @@ class Player(Entity):
         self.magic_switch_timer = Timer(200, lambda direction: self.switch_magic(direction))
         # utils timer
         self.util_timers = {
-            PlayerWeapons.SWORD.value: Timer(350, self.use_weapon),
+            PlayerWeapons.SWORD.value: Timer(300, self.use_weapon),
             PlayerMagics.FLAME.value: Timer(200, self.use_magic),
             PlayerMagics.HEAL.value: Timer(200, self.use_magic)
         }
@@ -161,10 +161,10 @@ class Player(Entity):
         #     print("magic_triggered")
 
     def update_timers(self):
-        self.util_timers[self.selected_weapon].use_util()
-        self.util_timers[self.selected_magic].use_util()
-        self.weapon_switch_timer.switch_util(self.util_switch_direction)
-        self.magic_switch_timer.switch_util(self.util_switch_direction)
+        self.util_timers[self.selected_weapon].trigger_action()
+        self.util_timers[self.selected_magic].trigger_action()
+        self.weapon_switch_timer.change_util(self.util_switch_direction)
+        self.magic_switch_timer.change_util(self.util_switch_direction)
         self.mana_regen_timer.mana_regeneration()
 
     def switch_magic(self, direction):

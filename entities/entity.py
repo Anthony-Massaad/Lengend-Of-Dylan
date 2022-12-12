@@ -76,8 +76,16 @@ class Entity(pygame.sprite.Sprite):
                         self.hitbox.top = sprite.hitbox.bottom
                     self.position.y = self.hitbox.y
 
-    @ abc.abstractmethod
-    def animate_entity(self):
+    @abc.abstractmethod
+    def animate_entity(self, delta_time: float):
+        return
+
+    @abc.abstractmethod
+    def update(self, delta_time: float):
+        return
+
+    @abc.abstractmethod
+    def update_timers(self):
         return
 
     def import_graphics(self, general_path):

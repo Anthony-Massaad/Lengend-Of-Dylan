@@ -45,6 +45,10 @@ class RoomView(pygame.sprite.Group):
             offset = sprite.rect.topleft - self.view_offset
             self.display_surface.blit(sprite.image, offset)
 
+    def enemy_update(self, player):
+        enemies = [sprite for sprite in self.sprites() if hasattr(sprite, 'sprite_type') and sprite.sprite_type == "enemy"]
+        for enemy in enemies:
+            enemy.enemy_update(player)
 
 class World:
     def __init__(self, terrain: dict) -> None:
@@ -119,6 +123,7 @@ class World:
             delta_time (float): the game clock for independent fps
         """
         self.display_surface.fill(Color.BLACK.value)
+        self.visible_sprites.enemy_update(self.player)
         self.visible_sprites.update(delta_time)
         self.visible_sprites.draw_room(self.player)
         self.user_interface.draw(self.player)

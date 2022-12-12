@@ -16,16 +16,10 @@ class Timer:
         self.function = function
         self.start_time = 0
         self.active = False
-        self._switch_util = False
-        self.is_mana_regen = False
 
-    def get_pygame_time(self) -> int:
-        """get relative time of game in milliseconds
-
-        Returns:
-            int: the current duration of the game
-        """
-        return pygame.time.get_ticks()
+        self.switch_util = True
+        self.is_mana_regen = True
+        self.action_performed = False
 
     def trigger_active(self) -> bool:
         """set the timer to active or inactive
@@ -35,21 +29,12 @@ class Timer:
         """
         return not self.active
 
-    def trigger_switch_util(self):
-        return not self._switch_util
-
-    def trigger_mana_regen(self):
-        return not self.is_mana_regen
-
     def start_timer(self) -> None:
         """Start the timer my activating it and getting the 
         relative start time in pygame
         """
         self.active = self.trigger_active()
-        self.start_time = self.get_pygame_time()
-        # Won't matter if we are hitting or using magic
-        self._switch_util = self.trigger_switch_util()
-        self.is_mana_regen = self.trigger_mana_regen()
+        self.start_time = pygame.time.get_ticks()
 
     def stop_timer(self) -> None:
         """when Timer is done, resets its configurations
@@ -57,29 +42,34 @@ class Timer:
         self.active = self.trigger_active()
         self.start_time = 0
 
-    def switch_util(self, direction):
+    def change_util(self, direction):
         if not self.active:
             return
 
-        if self.function and self._switch_util:
+        if self.function and self.switch_util:
             self.function(direction)
-            self._switch_util = self.trigger_switch_util()
+            self.switch_util = False
 
-        current_time = self.get_pygame_time()
+        current_time = pygame.time.get_ticks()
         if current_time - self.start_time >= self.duration:
             self.stop_timer()
+            self.switch_util = True
 
-    def use_util(self) -> None:
+    def trigger_action(self) -> None:
         """update the Timer, checking if it passed the duration given
         If so, stop the timer and launch the method if given
         """
         if not self.active:
             return
-        current_time = self.get_pygame_time()
+
+        if not self.action_performed and self.function:
+            self.function()
+            self.action_performed = True
+
+        current_time = pygame.time.get_ticks()
         if current_time - self.start_time >= self.duration:
             self.stop_timer()
-            if self.function:
-                self.function()
+            self.action_performed = False
             Log.debug(f"Timer stopped")
 
     def mana_regeneration(self):
@@ -88,8 +78,9 @@ class Timer:
 
         if self.function and self.is_mana_regen:
             self.function()
-            self.is_mana_regen = self.trigger_mana_regen()
+            self.is_mana_regen = False
 
         current_time = self.get_pygame_time()
         if current_time - self.start_time >= self.duration:
             self.stop_timer()
+            self.is_mana_regen = True
