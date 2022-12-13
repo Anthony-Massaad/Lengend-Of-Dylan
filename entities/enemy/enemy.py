@@ -72,6 +72,8 @@ class Enemy(Entity):
     def attack(self):
         for attackable_sprite in self.attackable_sprites:
             attackable_sprite.is_attacked(self.current_stats[StatsName.ATTACK.value])
+            self.particle_animations.create_particle(self.current_stats[StatsName.ATTACK_TYPE.value], attackable_sprite.rect.center, [self.visible_sprites])
+
 
     def update(self, delta_time: float):
         self.move(delta_time)

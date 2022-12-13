@@ -12,6 +12,7 @@ class Entity(pygame.sprite.Sprite):
     def __init__(self, groups: pygame.sprite.Group, visible_sprites, obstacle_sprites, attackable_sprites, pos, movement, folder_path, sprite_name, particle_animations):
         super().__init__(groups)
         self.current_stats = entity_data[sprite_name]
+        self.sprite_name = sprite_name
         Log.debug(f"{sprite_name} stats dictionary is {self.current_stats}")
         self.frame_index = 0
 
@@ -104,8 +105,9 @@ class Entity(pygame.sprite.Sprite):
     def is_attacked(self, entity_attack):
         self.current_stats[StatsName.HEALTH.value] -= entity_attack
         if self.current_stats[StatsName.HEALTH.value] <= 0:
-            ...
-            # self.kill()
+            if self.sprite_name != "player":
+                self.particle_animations.create_particle(self.sprite_name, self.rect.center, [self.visible_sprites])
+                self.kill()
 
     def import_graphics(self, general_path):
         for animation_key in self.animations.keys():

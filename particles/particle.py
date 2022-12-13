@@ -16,7 +16,7 @@ class Animation:
             'thunder': SupportFunctions.import_folder('graphics/particles/thunder'),
 
             # monster deaths
-            'raccoon': SupportFunctions.import_folder('graphics/particles/raccoon'),
+            'raccoon': SupportFunctions.import_entity_folder('graphics/particles/raccoon', (64, 64)),
             'spirit': SupportFunctions.import_folder('graphics/particles/nova'),
 
             # leafs
@@ -47,6 +47,9 @@ class Animation:
         animation_frames = random.choice(self.frames['leaf'])
         Particle(groups, pos, animation_frames)
 
+    def create_particle(self, animation_type, pos, groups):
+        animation_frames = self.frames[animation_type]
+        Particle(groups, pos, animation_frames)
 
 class Particle(pygame.sprite.Sprite):
 
