@@ -191,6 +191,8 @@ class Player(Entity):
 
         if self.selected_magic == PlayerMagics.HEAL.value:
             self.magic.heal(self, strength, self.current_stats[StatsName.MANA.value], cost, [self.visible_sprites])
+        else:
+            self.magic.flame_attack(self, strength,  self.current_stats[StatsName.MANA.value], cost, [self.visible_sprites])
 
     def switch_weapon(self, direction):
         Log.info(f"Weapon switch direction {direction}")
@@ -202,7 +204,18 @@ class Player(Entity):
         Log.debug(f"Current weapon is {self.weapons[self.weapon_index]}")
 
     def allow_magic(self):
-        self.magic_invoked = False
+        self.magic_invoked = False        
+
+    def hit_spell(self, attack, strength):
+        for attackable_sprite in self.attackable_sprites:
+            if attackable_sprite.hitbox.colliderect(attack):
+                if attackable_sprite.sprite_type == "enemy":
+                    attackable_sprite.is_attacked(strength)
+                else:
+                    pos = attackable_sprite.rect.center - pygame.math.Vector2(0, 64)
+                    for _ in range(random.randint(2, 6)):
+                        self.particle_animations.create_grass_particles(pos, self.visible_sprites)
+                    attackable_sprite.kill()
 
     def attack(self):
         direction = self.movement_status.split('_')[0]
@@ -228,7 +241,7 @@ class Player(Entity):
                     attackable_sprite.is_attacked(self.current_stats[StatsName.ATTACK.value])
                 else:
                     pos = attackable_sprite.rect.center - pygame.math.Vector2(0, 64)
-                    for amount_leaves in range(random.randint(2, 6)):
+                    for _ in range(random.randint(2, 6)):
                         self.particle_animations.create_grass_particles(pos, self.visible_sprites)
                     attackable_sprite.kill()
 
