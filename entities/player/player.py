@@ -238,7 +238,6 @@ class Player(Entity):
 
         for attackable_sprite in self.attackable_sprites:
             if attackable_sprite.hitbox.colliderect(attack):
-                print(attackable_sprite)
                 if attackable_sprite.sprite_type == "enemy":
                     attackable_sprite.is_attacked(self.current_stats[StatsName.ATTACK.value])
                 else:
@@ -257,7 +256,7 @@ class Player(Entity):
             if self.is_attacking:
                 self.is_attacking = False
                 self.attack_cooldown.start_timer()
-
+                self.attack()
             self.frame_index = 0
         self.image = self.animations[self.movement_status][int(self.frame_index)]
 
