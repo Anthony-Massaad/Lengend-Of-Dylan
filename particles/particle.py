@@ -9,6 +9,7 @@ class Animation:
         self.frames = {
             # magic
             'flame': SupportFunctions.import_folder('graphics/particles/flame/frames'),
+            'aura': SupportFunctions.import_folder('graphics/particles/aura'),
             'heal': SupportFunctions.import_folder('graphics/particles/heal/frames'),
 
             # attacks

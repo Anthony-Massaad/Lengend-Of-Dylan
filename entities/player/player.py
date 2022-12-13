@@ -10,6 +10,7 @@ from item.item_data import ItemData
 from logger.log import Log
 from timer.timer import Timer
 from entities.entity import Entity
+from particles.magic import Magic
 
 # Class constants for all the player movements. Name is relative to the folder directory
 class Movement(Enum):
@@ -46,6 +47,8 @@ class Player(Entity):
             PlayerMagics.HEAL.value: {DataConstant.STRENGTH: 15, DataConstant.COST: 10}
         }
 
+        self.magic = Magic(self.particle_animations)
+
         ### BEGINNING OF UTILS ###
         self.util_switch_direction = 1
         self.last_util_switch = PlayerUtilNames.MAGIC
@@ -76,6 +79,7 @@ class Player(Entity):
         # inventory
         self.inventory = Inventory()
         self.inventory.add_item(Item(ItemName.BEER.value, ItemData.beer(), "beer"), 2)
+
 
     def controls(self):
         keys = pygame.key.get_pressed()
@@ -184,28 +188,9 @@ class Player(Entity):
         if self.selected_magic != PlayerMagics.HEAL.value:
             strength += self.current_stats[StatsName.MANA_ATTACK.value]
         cost = self.magic_data[self.selected_magic][DataConstant.COST]
-        Log.debug(f"Magic strength of {self.selected_magic} is {strength}")
-        Log.debug(f"Magic cost of {self.selected_magic} is {cost}")
-
-        if not self.reduce_mana(cost):
-            return
 
         if self.selected_magic == PlayerMagics.HEAL.value:
-            self.heal(strength)
-
-    def reduce_mana(self, cost):
-        if self.current_stats[StatsName.MANA.value] < cost:
-            return False
-        self.current_stats[StatsName.MANA.value] -= cost
-        if self.current_stats[StatsName.MANA.value] > self.max_stats[StatsName.MANA.value]:
-            self.current_stats[StatsName.MANA.value] = self.max_stats[StatsName.MANA.value]
-
-        return True
-
-    def heal(self, strength):
-        self.current_stats[StatsName.HEALTH.value] += strength
-        if self.current_stats[StatsName.HEALTH.value] > self.max_stats[StatsName.HEALTH.value]:
-            self.current_stats[StatsName.HEALTH.value] = self.max_stats[StatsName.HEALTH.value]
+            self.magic.heal(self, strength, self.current_stats[StatsName.MANA.value], cost, [self.visible_sprites])
 
     def switch_weapon(self, direction):
         Log.info(f"Weapon switch direction {direction}")
