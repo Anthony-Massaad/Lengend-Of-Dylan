@@ -13,8 +13,8 @@ class Movement(Enum):
 
 class Enemy(Entity):
 
-    def __init__(self, sprite_name, pos, groups: pygame.sprite.Group, obstacle_sprites, attackable_sprites: pygame.sprite.Group):
-        super().__init__(groups, obstacle_sprites, attackable_sprites, pos, Movement, FilePath.monsters.value + "/" + sprite_name, sprite_name)
+    def __init__(self, sprite_name, pos, groups: pygame.sprite.Group, visible_sprites, obstacle_sprites, attackable_sprites: pygame.sprite.Group, particle_animations):
+        super().__init__(groups, visible_sprites, obstacle_sprites, attackable_sprites, pos, Movement, FilePath.monsters.value + "/" + sprite_name, sprite_name, particle_animations)
         self.sprite_type = "enemy"
 
     def update_timers(self):

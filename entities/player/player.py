@@ -1,3 +1,4 @@
+import random
 from enum import Enum
 
 import pygame
@@ -33,8 +34,8 @@ class DataConstant(Enum):
 
 class Player(Entity):
 
-    def __init__(self, sprite_name, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group, attackable_sprites: pygame.sprite.Group):
-        super().__init__(group, game_obstacle_sprites, attackable_sprites, position, Movement, FilePath.character_path.value, sprite_name)
+    def __init__(self, sprite_name, position: tuple, group: pygame.sprite.Group, visible_sprites, game_obstacle_sprites: pygame.sprite.Group, attackable_sprites: pygame.sprite.Group, particle_animations):
+        super().__init__(group, visible_sprites, game_obstacle_sprites, attackable_sprites, position, Movement, FilePath.character_path.value, sprite_name, particle_animations)
         self.max_stats = {
             StatsName.HEALTH.value: 100,
             StatsName.MANA.value: 100
@@ -241,6 +242,9 @@ class Player(Entity):
                 if attackable_sprite.sprite_type == "enemy":
                     attackable_sprite.is_attacked(self.current_stats[StatsName.ATTACK.value])
                 else:
+                    pos = attackable_sprite.rect.center
+                    for amount_leaves in range(random.randint(2, 6)):
+                        self.particle_animations.create_grass_particles(pos, self.visible_sprites)
                     attackable_sprite.kill()
 
     def mana_regeneration(self):

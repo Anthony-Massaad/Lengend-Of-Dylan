@@ -8,6 +8,7 @@ from sprites.sprites import GameObjects
 from support_functions.support_functions import SupportFunctions
 from user_interface.user_interface import UserInterface
 from entities.enemy.enemy import Enemy
+from particles.particle import Animation
 
 class RoomView(pygame.sprite.Group):
     """the view of the game, which inherits from pygame Group
@@ -83,10 +84,9 @@ class World:
         self.enemies = None
         self.map = None
         self.map_rect = None
+        self.particle_animations = Animation()
         self.setup()
         self.user_interface = UserInterface()
-
-        # self.enemies = []
 
     def generate_terrain_data(self, terrain: dict) -> dict:
         data = {}
@@ -114,7 +114,7 @@ class World:
                     elif style == 'entities':
                         if col == '394':
                             # entity is player
-                            self.player = Player("player", (x, y), [self.visible_sprites, self.attackable_sprites_for_enemies], self.obstacle_sprites, self.attackable_sprites_for_player)
+                            self.player = Player("player", (x, y), [self.visible_sprites, self.attackable_sprites_for_enemies], self.visible_sprites, self.obstacle_sprites, self.attackable_sprites_for_player, self.particle_animations)
                         else:
                             monster_name = ""
                             if col == '392':
@@ -125,7 +125,7 @@ class World:
                             if monster_name == "":
                                 Log.error("MONSTER NAME UNKNOWN")
 
-                            Enemy(monster_name, (x, y), [self.visible_sprites, self.attackable_sprites_for_player], self.obstacle_sprites, self.attackable_sprites_for_enemies)
+                            Enemy(monster_name, (x, y), [self.visible_sprites, self.attackable_sprites_for_player], self.visible_sprites, self.obstacle_sprites, self.attackable_sprites_for_enemies, self.particle_animations)
 
         # add string to terrain data
         self.map = pygame.image.load("graphics/map/starting_room.png").convert()
