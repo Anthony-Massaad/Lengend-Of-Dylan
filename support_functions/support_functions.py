@@ -43,6 +43,7 @@ class SupportFunctions:
         # print(path)
         for folder in walk(path):
             img_files = folder[2]
+            img_files = sorted(img_files)
             # print(img_files)
             for image in img_files:
                 full_path = path + "/" + image
@@ -67,6 +68,7 @@ class SupportFunctions:
         # print(path)
         for folder in walk(path):
             img_files = folder[2]
+            img_files = sorted(img_files)
             # print(img_files)
             for image in img_files:
                 full_path = path + "/" + image
