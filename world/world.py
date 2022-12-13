@@ -19,9 +19,9 @@ class RoomView(pygame.sprite.Group):
         """
         super().__init__()
         self.display_surface = pygame.display.get_surface()
-        self.half_width = GAME_WIDTH // 2
-        self.half_height = GAME_HEIGHT // 2
         self.view_offset = pygame.math.Vector2()
+
+        self.has_offset = False
 
     def draw_room(self, player: Player, map, map_rect) -> None:
         """draw the game room with all the sprites
@@ -31,14 +31,25 @@ class RoomView(pygame.sprite.Group):
         """
 
         # offset for game
-        self.view_offset.x = player.rect.centerx - self.half_width
-        self.view_offset.y = player.rect.centery - self.half_height
-        Log.debug(f"Offset for game (x: {self.view_offset.x}, y: {self.view_offset.y})")
+        # self.view_offset.x = player.rect.centerx - self.half_width
+        # self.view_offset.y = player.rect.centery - self.half_height
+
+        self.view_offset.x = player.rect.centerx - (GAME_WIDTH // 2)
+        self.view_offset.y = player.rect.centery - (GAME_HEIGHT // 2)
+        # Log.info(f"Offset for game (x: {self.view_offset.x}, y: {self.view_offset.y})")
         # drawing floor as first thing to draw
 
         ground_offset = map_rect.topleft - self.view_offset
-        Log.debug(f"Offset for map {ground_offset}")
+        # Log.debug(f"Offset for map {ground_offset}") -1372 right bottom 0 left up
+        # print(ground_offset, -map_rect.width + GAME_WIDTH, -map_rect.height + GAME_HEIGHT)
+        # hard stop for -1372 right bottom 0 left up
+        # x = min(0, int(ground_offset.x)) # left
+        # y = min(0, int(ground_offset.y)) # top
+        # x = max(-map_rect.width + GAME_WIDTH, x) # right
+        # y = max(-map_rect.height + GAME_HEIGHT, y) # bottom
+        # self.display_surface.blit(map, (x, y))
         self.display_surface.blit(map, ground_offset)
+        # print(map_rect.width - self.view_offset.x - GAME_WIDTH, map_rect.height - self.view_offset.y - GAME_HEIGHT)
 
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
             offset = sprite.rect.topleft - self.view_offset
