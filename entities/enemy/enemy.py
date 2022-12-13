@@ -13,12 +13,9 @@ class Movement(Enum):
 
 class Enemy(Entity):
 
-    def __init__(self, sprite_name, pos, groups: pygame.sprite.Group, obstacle_sprites):
-        super().__init__(groups, obstacle_sprites, pos, Movement, FilePath.monsters.value + "/" + sprite_name, sprite_name)
+    def __init__(self, sprite_name, pos, groups: pygame.sprite.Group, obstacle_sprites, attackable_sprites: pygame.sprite.Group):
+        super().__init__(groups, obstacle_sprites, attackable_sprites, pos, Movement, FilePath.monsters.value + "/" + sprite_name, sprite_name)
         self.sprite_type = "enemy"
-
-    def attack(self):
-        return
 
     def update_timers(self):
         self.attack_cooldown.cooldown()
@@ -29,6 +26,7 @@ class Enemy(Entity):
             if self.is_attacking:
                 self.is_attacking = False
                 self.attack_cooldown.start_timer()
+                self.attack()
             self.frame_index = 0
         self.image = self.animations[self.movement_status][int(self.frame_index)]
 
@@ -37,7 +35,6 @@ class Enemy(Entity):
         if self.movement_status == Movement.ATTACK.value and not self.attack_cooldown.active:
             self.is_attacking = True
             self.direction = pygame.math.Vector2()
-            self.attack()
         elif self.movement_status == Movement.MOVE.value:
             self.direction = self.get_direction_to_player(player)
         else:
@@ -65,12 +62,16 @@ class Enemy(Entity):
     def update_movement_status(self, player):
         distance_to_player = self.get_distance_to_player(player)
 
-        if distance_to_player <= self.current_stats[StatsName.ATTACK_RADIUS.value]:
+        if distance_to_player <= self.current_stats[StatsName.ATTACK_RADIUS.value] and not self.attack_cooldown.active:
             self.movement_status = Movement.ATTACK.value
-        elif distance_to_player <= self.current_stats[StatsName.NOTICE_RADIUS.value]:
+        elif distance_to_player <= self.current_stats[StatsName.NOTICE_RADIUS.value] and not self.attack_cooldown.active:
             self.movement_status = Movement.MOVE.value
         else:
             self.movement_status = Movement.IDLE.value
+
+    def attack(self):
+        for attackable_sprite in self.attackable_sprites:
+            attackable_sprite.is_attacked(self.current_stats[StatsName.ATTACK.value])
 
     def update(self, delta_time: float):
         self.move(delta_time)

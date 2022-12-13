@@ -86,6 +86,14 @@ class UserInterface:
         self.screen.blit(magic_image, magic_image.get_rect(center=rect.center))
 
     def draw(self, player, enemies):
+        for enemy in enemies:
+            # Health bar offset is respective to the player
+            health_bar_offset_x = enemy.rect.topleft[0] - (player.rect.centerx - (GAME_WIDTH // 2)) + 7
+            health_bar_offset_y = enemy.rect.topleft[1] - (player.rect.centery - (GAME_WIDTH // 2)) - 5
+            self.draw_bar(enemy.current_stats[StatsName.HEALTH.value], enemy.current_stats[StatsName.MAX_HEALTH.value],
+                          pygame.Rect(health_bar_offset_x, health_bar_offset_y, UISettings.ENEMY_HEALTH_WIDTH.value,
+                                      UISettings.ENEMY_BAR_HEIGHT.value), Color.GREEN.value, True, False)
+
         self.draw_bar(player.current_stats[StatsName.HEALTH.value], player.max_stats[StatsName.HEALTH.value],
                       self.health_bar, Color.GREEN.value, True, True)
         self.draw_bar(player.current_stats[StatsName.MANA.value], player.max_stats[StatsName.MANA.value],
@@ -98,10 +106,4 @@ class UserInterface:
             self.magic_ui(player.magic_index, player.magic_switch_timer.active)
             self.weapon_ui(player.weapon_index, player.weapon_switch_timer.active)
 
-        for enemy in enemies:
-            # Health bar offset is respective to the player
-            health_bar_offset_x = enemy.rect.topleft[0] - (player.rect.centerx - (GAME_WIDTH // 2)) + 7
-            health_bar_offset_y = enemy.rect.topleft[1] - (player.rect.centery - (GAME_WIDTH // 2)) - 5
-            self.draw_bar(enemy.current_stats[StatsName.HEALTH.value], enemy.current_stats[StatsName.MAX_HEALTH.value],
-                          pygame.Rect(health_bar_offset_x, health_bar_offset_y, UISettings.ENEMY_HEALTH_WIDTH.value,
-                                      UISettings.ENEMY_BAR_HEIGHT.value), Color.GREEN.value, True, False)
+

@@ -74,7 +74,11 @@ class World:
         Log.info("game graphics imported")
         # all objects in the game 
         self.visible_sprites = RoomView()
-        self.obstacle_sprites = RoomView()
+        self.obstacle_sprites = pygame.sprite.Group()
+
+        self.attackable_sprites_for_player = pygame.sprite.Group()
+        self.attackable_sprites_for_enemies = pygame.sprite.Group()
+
         self.player = None
         self.enemies = None
         self.map = None
@@ -94,7 +98,6 @@ class World:
     def setup(self) -> None:
         """Create the world setup
         """
-
         for style, layout in self.terrain_data.items():
             for row_index, row in enumerate(layout):
                 for col_index, col in enumerate(row):
@@ -107,11 +110,11 @@ class World:
                         GameObjects((x, y), [self.visible_sprites, self.obstacle_sprites], SpriteType.OBJECT,
                                     self.graphics['objects'][int(col)])
                     elif style == 'grass':
-                        GameObjects((x, y), [self.visible_sprites, self.obstacle_sprites], SpriteType.GRASS, self.graphics['grass'][int(col)])
+                        GameObjects((x, y), [self.visible_sprites, self.obstacle_sprites, self.attackable_sprites_for_player], SpriteType.GRASS, self.graphics['grass'][int(col)])
                     elif style == 'entities':
                         if col == '394':
                             # entity is player
-                            self.player = Player("player", (x, y), [self.visible_sprites], self.obstacle_sprites)
+                            self.player = Player("player", (x, y), [self.visible_sprites, self.attackable_sprites_for_enemies], self.obstacle_sprites, self.attackable_sprites_for_player)
                         else:
                             monster_name = ""
                             if col == '392':
@@ -122,10 +125,7 @@ class World:
                             if monster_name == "":
                                 Log.error("MONSTER NAME UNKNOWN")
 
-                            Enemy(monster_name, (x, y), [self.visible_sprites], self.obstacle_sprites)
-
-
-        self.enemies = [sprite for sprite in self.visible_sprites.sprites() if hasattr(sprite, 'sprite_type') and sprite.sprite_type == "enemy"]
+                            Enemy(monster_name, (x, y), [self.visible_sprites, self.attackable_sprites_for_player], self.obstacle_sprites, self.attackable_sprites_for_enemies)
 
         # add string to terrain data
         self.map = pygame.image.load("graphics/map/starting_room.png").convert()
@@ -147,6 +147,7 @@ class World:
 
             delta_time (float): the game clock for independent fps
         """
+        self.enemies = [sprite for sprite in self.visible_sprites.sprites() if hasattr(sprite, 'sprite_type') and sprite.sprite_type == "enemy"]
         self.display_surface.fill(Color.BLACK.value)
         self.visible_sprites.enemy_update(self.player, self.enemies)
         self.visible_sprites.update(delta_time)

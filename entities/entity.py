@@ -9,7 +9,7 @@ import abc
 
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, groups: pygame.sprite.Group, obstacle_sprites, pos, movement, folder_path, sprite_name):
+    def __init__(self, groups: pygame.sprite.Group, obstacle_sprites, attackable_sprites, pos, movement, folder_path, sprite_name):
         super().__init__(groups)
         self.current_stats = entity_data[sprite_name]
         Log.debug(f"{sprite_name} stats dictionary is {self.current_stats}")
@@ -35,10 +35,12 @@ class Entity(pygame.sprite.Sprite):
 
         self.position = pygame.math.Vector2(self.rect.topleft)
         self.game_obstacle_sprites = obstacle_sprites
+        self.attackable_sprites = attackable_sprites
         self.direction = pygame.math.Vector2()
 
         self.is_attacking = False
         self.attack_cooldown = Timer(self.current_stats[StatsName.ATTACK_COOLDOWN.value])
+
 
     def move(self, delta_time: float):
         # default the vector so diagonal is the same
@@ -92,6 +94,16 @@ class Entity(pygame.sprite.Sprite):
     @abc.abstractmethod
     def update_timers(self):
         return
+
+    @abc.abstractmethod
+    def attack(self):
+        return
+
+    def is_attacked(self, entity_attack):
+        self.current_stats[StatsName.HEALTH.value] -= entity_attack
+        if self.current_stats[StatsName.HEALTH.value] <= 0:
+            ...
+            # self.kill()
 
     def import_graphics(self, general_path):
         for animation_key in self.animations.keys():

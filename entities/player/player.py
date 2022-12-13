@@ -2,7 +2,7 @@ from enum import Enum
 
 import pygame
 
-from constants import StatsName, ItemName, PlayerWeapons, PlayerMagics, PlayerUtilNames, FilePath
+from constants import StatsName, ItemName, PlayerWeapons, PlayerMagics, PlayerUtilNames, FilePath, GAME_WIDTH
 from inventory.inventory import Inventory
 from item.item import Item
 from item.item_data import ItemData
@@ -33,8 +33,8 @@ class DataConstant(Enum):
 
 class Player(Entity):
 
-    def __init__(self, sprite_name, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group):
-        super().__init__(group, game_obstacle_sprites, position, Movement, FilePath.character_path.value, sprite_name)
+    def __init__(self, sprite_name, position: tuple, group: pygame.sprite.Group, game_obstacle_sprites: pygame.sprite.Group, attackable_sprites: pygame.sprite.Group):
+        super().__init__(group, game_obstacle_sprites, attackable_sprites, position, Movement, FilePath.character_path.value, sprite_name)
         self.max_stats = {
             StatsName.HEALTH.value: 100,
             StatsName.MANA.value: 100
@@ -114,7 +114,7 @@ class Player(Entity):
         if keys[pygame.K_k] and not self.attack_cooldown.active:
             Log.info(f"Player attack invoked using {self.selected_weapon}")
             self.is_attacking = True
-            self.use_weapon()
+            self.attack()
             # reset the direction when using a weapon and the player index
             self.direction = pygame.math.Vector2()
             self.frame_index = 0
@@ -218,17 +218,31 @@ class Player(Entity):
     def allow_magic(self):
         self.magic_invoked = False
 
-    def use_weapon(self):
+    def attack(self):
         direction = self.movement_status.split('_')[0]
         Log.info(f"Direction of attack is {direction}")
+        attack = None
         if direction == Movement.RIGHT.value:
-            ...
+            attack = self.image.get_rect(center=self.rect.center)
+            attack.x += 32
         elif direction == Movement.LEFT.value:
-            ...
+            attack = self.image.get_rect(center=self.rect.center)
+            attack.x -= 32
         elif direction == Movement.DOWN.value:
-            ...
+            attack = self.image.get_rect(center=self.rect.center)
+            attack.y += 32
         elif direction == Movement.UP.value:
-            ...
+            attack = self.image.get_rect(center=self.rect.center)
+            attack.y -= 32
+        attack = attack.inflate(0, -32)
+
+        for attackable_sprite in self.attackable_sprites:
+            if attackable_sprite.hitbox.colliderect(attack):
+                print(attackable_sprite)
+                if attackable_sprite.sprite_type == "enemy":
+                    attackable_sprite.is_attacked(self.current_stats[StatsName.ATTACK.value])
+                else:
+                    attackable_sprite.kill()
 
     def mana_regeneration(self):
         self.current_stats[StatsName.MANA.value] += 4
