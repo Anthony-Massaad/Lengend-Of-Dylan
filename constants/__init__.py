@@ -23,7 +23,7 @@ class StatsName(Enum):
     HEALTH = 'health'
     MANA = 'mana'
     DEFENSE = 'defense'
-    ATTACK = 'action'
+    ATTACK = 'attack'
     MANA_ATTACK = 'mana_attack'
     SPEED = "speed"
     ATTACK_TYPE = "attack_type"

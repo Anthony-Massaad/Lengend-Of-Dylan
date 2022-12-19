@@ -7,7 +7,7 @@ from entities.entity import Entity
 
 class Movement(Enum):
     IDLE = 'idle'
-    ATTACK = 'action'
+    ATTACK = 'attack'
     MOVE = 'move'
 
 
