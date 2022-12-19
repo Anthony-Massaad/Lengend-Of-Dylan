@@ -32,7 +32,7 @@ class Entity(pygame.sprite.Sprite):
         # graphic_setup
         self.image = self.animations[self.movement_status][self.frame_index]
         self.rect = self.image.get_rect(topleft=pos)
-        self.hitbox = self.rect.inflate(0, -20)
+        self.hitbox = self.rect.inflate(-5, -20)
 
         self.position = pygame.math.Vector2(self.rect.topleft)
         self.game_obstacle_sprites = obstacle_sprites

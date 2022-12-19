@@ -6,7 +6,7 @@ from entities.enemy.enemy import Enemy
 from entities.player.player import Player
 
 class GameDebugger:
-    draw_enemy_radius = True
+    draw_enemy_radius = False
     draw_obstacles = True
     draw_enemy_hitbox = True
     draw_player_hitbox = True
@@ -38,3 +38,11 @@ class GameDebugger:
             for sprite in obstacle_sprite:
                 offset_x, offset_y = cls.get_offset(sprite, player)
                 pygame.draw.rect(pygame.display.get_surface(), (255, 0, 0), pygame.Rect(offset_x, offset_y, sprite.hitbox.width, sprite.hitbox.height), 2)
+
+    @classmethod
+    def draw_spell_hitbox(cls, attack, player_hitbox):
+        x, y = attack.rect.centerx - (player_hitbox.centerx - (GAME_WIDTH // 2)), attack.rect.centery - (player_hitbox.centery - (GAME_HEIGHT // 2))
+        pygame.draw.rect(pygame.display.get_surface(), (255, 0, 0), pygame.Rect(x, y, attack.rect.width, attack.rect.height), 2)
+    @classmethod
+    def draw_attack_hitbox(cls, attack, player_hitbox):
+        ...

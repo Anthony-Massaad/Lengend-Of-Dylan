@@ -24,9 +24,15 @@ class GameObjects(pygame.sprite.Sprite):
         # takes a pygame rect and change the size of it
         if self.sprite_type == SpriteType.OBJECT:
             self.rect = self.image.get_rect(topleft=(pos[0], pos[1] - TILE_SIZE))
+            self.hitbox = self.rect.inflate(-10, -TILE_SIZE)
+        elif self.sprite_type == SpriteType.GRASS:
+            self.rect = self.image.get_rect(topleft=pos)
+            self.hitbox = self.rect.inflate(0, -15)
         else:
             self.rect = self.image.get_rect(topleft=pos)
-        self.hitbox = self.rect.inflate(0, -10)
+            self.hitbox = self.rect.inflate(0, 0)
+
+
 
     def update(self, delta_time):
         ...

@@ -1,6 +1,5 @@
 import pygame
 from random import randint
-from particles.particle import Animation
 from constants import StatsName, TILE_SIZE
 from enum import Enum
 
@@ -38,7 +37,6 @@ class Magic:
             direction = player.movement_status.split('_')[0]
 
             for i in range(5):
-                attack = None
                 attack_direction = None
                 if direction == Direction.RIGHT.value:
                     attack_direction = pygame.math.Vector2(1, 0)
@@ -52,13 +50,13 @@ class Magic:
                 if attack_direction.x:
                     offset_x = (attack_direction.x * (i+1)) * TILE_SIZE
                     x = player.rect.centerx + offset_x + randint(-TILE_SIZE//3, TILE_SIZE//3)
-                    y = player.rect.centery  + randint(-TILE_SIZE//3, TILE_SIZE//3)
+                    y = player.rect.centery + randint(-TILE_SIZE//3, TILE_SIZE//3)
                 else:
                     offset_y = (attack_direction.y * (i+1)) * TILE_SIZE
                     x = player.rect.centerx + randint(-TILE_SIZE//3, TILE_SIZE//3)
                     y = player.rect.centery + offset_y  + randint(-TILE_SIZE//3, TILE_SIZE//3)
 
                 self.animation_player.create_particle("flame", (x,y), groups)
-                attack =  player.image.get_rect(topleft=(x, y))
+                attack = player.image.get_rect(topleft=(x, y))
                 attack = attack.inflate(-32, -32)
                 player.hit_spell(attack, strength)
