@@ -9,6 +9,7 @@ from support_functions.support_functions import SupportFunctions
 from user_interface.user_interface import UserInterface
 from entities.enemy.enemy import Enemy
 from particles.particle import Animation
+from game_debugger.GameDebugger import GameDebugger
 
 class RoomView(pygame.sprite.Group):
     """the view of the game, which inherits from pygame Group
@@ -153,3 +154,5 @@ class World:
         self.visible_sprites.update(delta_time)
         self.visible_sprites.draw_room(self.player, self.map, self.map_rect)
         self.user_interface.draw(self.player, self.enemies)
+
+        GameDebugger.hitbox_debug(self.visible_sprites, self.obstacle_sprites, self.player)
