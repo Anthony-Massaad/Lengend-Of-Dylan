@@ -56,10 +56,12 @@ class Particle(pygame.sprite.Sprite):
 
     def __init__(self, groups: pygame.sprite.Group, pos, animation_frames):
         super().__init__(groups)
+        self.sprite_type = "particle"
         self.frame_index = 0
         self.animation = animation_frames
         self.image = self.animation[self.frame_index]
         self.rect = self.image.get_rect(center=pos)
+        self.hitbox = self.rect
 
     def animate(self, delta_time):
         self.frame_index += 12 * delta_time

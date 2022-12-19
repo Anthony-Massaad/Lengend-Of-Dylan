@@ -27,7 +27,6 @@ class Magic:
                 player.current_stats[StatsName.HEALTH.value] = player.max_stats[StatsName.HEALTH.value]
 
             self.reduce_mana(player, cost)
-
             self.animation_player.create_particle('aura', player.rect.center, groups)
             self.animation_player.create_particle('heal', player.rect.center, groups)
     
@@ -54,9 +53,9 @@ class Magic:
                 else:
                     offset_y = (attack_direction.y * (i+1)) * TILE_SIZE
                     x = player.rect.centerx + randint(-TILE_SIZE//3, TILE_SIZE//3)
-                    y = player.rect.centery + offset_y  + randint(-TILE_SIZE//3, TILE_SIZE//3)
+                    y = player.rect.centery + offset_y + randint(-TILE_SIZE//3, TILE_SIZE//3)
 
-                self.animation_player.create_particle("flame", (x,y), groups)
-                attack = player.image.get_rect(topleft=(x, y))
+                attack = player.image.get_rect(center=(x, y))
                 attack = attack.inflate(-32, -32)
+                self.animation_player.create_particle("flame", (attack.x, attack.y), groups)
                 player.hit_spell(attack, strength)

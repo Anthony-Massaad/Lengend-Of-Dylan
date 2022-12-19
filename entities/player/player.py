@@ -37,13 +37,14 @@ class Player(Entity):
 
     def __init__(self, sprite_name, position: tuple, group: pygame.sprite.Group, visible_sprites, game_obstacle_sprites: pygame.sprite.Group, attackable_sprites: pygame.sprite.Group, particle_animations):
         super().__init__(group, visible_sprites, game_obstacle_sprites, attackable_sprites, position, Movement, FilePath.character_path.value, sprite_name, particle_animations)
+        self.sprite_type = "player"
         self.max_stats = {
             StatsName.HEALTH.value: 100,
             StatsName.MANA.value: 100
         }
 
         self.magic_data = {
-            PlayerMagics.FLAME.value: {DataConstant.STRENGTH: 5, DataConstant.COST: 55},
+            PlayerMagics.FLAME.value: {DataConstant.STRENGTH: 5, DataConstant.COST: 0},
             PlayerMagics.HEAL.value: {DataConstant.STRENGTH: 15, DataConstant.COST: 10}
         }
 
