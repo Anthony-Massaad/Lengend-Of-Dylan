@@ -11,7 +11,7 @@ import abc
 class Entity(pygame.sprite.Sprite):
     def __init__(self, groups: pygame.sprite.Group, visible_sprites, obstacle_sprites, attackable_sprites, pos, movement, folder_path, sprite_name, particle_animations):
         super().__init__(groups)
-        self.current_stats = entity_data[sprite_name]
+        self.current_stats = entity_data[sprite_name].copy()
         self.sprite_name = sprite_name
         Log.debug(f"{sprite_name} stats dictionary is {self.current_stats}")
         self.frame_index = 0

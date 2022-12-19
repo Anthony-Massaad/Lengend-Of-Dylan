@@ -27,7 +27,7 @@ class Log:
 
     """
     log_level = LogLevels.INFO
-    is_active = True
+    is_active = False
 
     @classmethod
     def print_console(cls, msg: str) -> None:

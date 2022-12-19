@@ -24,9 +24,9 @@ class Enemy(Entity):
         self.frame_index += 4 * delta_time
         if self.frame_index >= len(self.animations[self.movement_status]):
             if self.is_attacking:
+                self.attack()
                 self.is_attacking = False
                 self.attack_cooldown.start_timer()
-                self.attack()
             self.frame_index = 0
         self.image = self.animations[self.movement_status][int(self.frame_index)]
 

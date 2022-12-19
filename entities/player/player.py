@@ -241,7 +241,7 @@ class Player(Entity):
                     attackable_sprite.is_attacked(self.current_stats[StatsName.ATTACK.value])
                 else:
                     pos = attackable_sprite.rect.center - pygame.math.Vector2(0, 64)
-                    for _ in range(random.randint(2, 6)):
+                    for _ in range(random.randint(1, 6)):
                         self.particle_animations.create_grass_particles(pos, self.visible_sprites)
                     attackable_sprite.kill()
 
