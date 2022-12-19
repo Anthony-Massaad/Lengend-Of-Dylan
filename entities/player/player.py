@@ -3,14 +3,14 @@ from enum import Enum
 
 import pygame
 
-from constants import StatsName, ItemName, PlayerWeapons, PlayerMagics, PlayerUtilNames, FilePath, GAME_WIDTH
+from constants import StatsName, ItemName, PlayerWeapons, PlayerMagics, PlayerUtilNames, FilePath
 from inventory.inventory import Inventory
 from item.item import Item
 from item.item_data import ItemData
 from logger.log import Log
 from timer.timer import Timer
 from entities.entity import Entity
-from particles.magic import Magic
+from action.magic import Magic
 
 # Class constants for all the player movements. Name is relative to the folder directory
 class Movement(Enum):
