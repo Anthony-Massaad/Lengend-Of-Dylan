@@ -11,6 +11,7 @@ from logger.log import Log
 from timer.timer import Timer
 from entities.entity import Entity
 from action.magic import Magic
+from action.attack import Attack
 
 # Class constants for all the player movements. Name is relative to the folder directory
 class Movement(Enum):
@@ -35,9 +36,10 @@ class DataConstant(Enum):
 
 class Player(Entity):
 
-    def __init__(self, sprite_name, position: tuple, group: pygame.sprite.Group, visible_sprites, game_obstacle_sprites: pygame.sprite.Group, attackable_sprites: pygame.sprite.Group, particle_animations):
-        super().__init__(group, visible_sprites, game_obstacle_sprites, attackable_sprites, position, Movement, FilePath.character_path.value, sprite_name, particle_animations)
+    def __init__(self, sprite_name, position: tuple, group: pygame.sprite.Group, visible_sprites, game_obstacle_sprites: pygame.sprite.Group, attackable_sprites: pygame.sprite.Group, particle_animations, attack_sig_animations):
+        super().__init__(group, visible_sprites, game_obstacle_sprites, attackable_sprites, position, Movement, FilePath.character_path.value, sprite_name, particle_animations, attack_sig_animations)
         self.sprite_type = "player"
+
         self.max_stats = {
             StatsName.HEALTH.value: 100,
             StatsName.MANA.value: 100
@@ -48,7 +50,8 @@ class Player(Entity):
             PlayerMagics.HEAL.value: {DataConstant.STRENGTH: 15, DataConstant.COST: 10}
         }
 
-        self.magic = Magic(self.particle_animations)
+        self.magic_animations = Magic(self.particle_animations)
+        self.attack_animations = Attack(self.attack_sig_animations)
 
         ### BEGINNING OF UTILS ###
         self.util_switch_direction = 1
@@ -120,7 +123,7 @@ class Player(Entity):
         if keys[pygame.K_k] and not self.attack_cooldown.active:
             Log.info(f"Player attack invoked using {self.selected_weapon}")
             self.is_attacking = True
-            self.attack()
+            self.attack_animations.basic_attack(self, self.visible_sprites)
             # reset the direction when using a weapon and the player index
             self.direction = pygame.math.Vector2()
             self.frame_index = 0
@@ -191,9 +194,9 @@ class Player(Entity):
         cost = self.magic_data[self.selected_magic][DataConstant.COST]
 
         if self.selected_magic == PlayerMagics.HEAL.value:
-            self.magic.heal(self, strength, self.current_stats[StatsName.MANA.value], cost, [self.visible_sprites])
+            self.magic_animations.heal(self, strength, self.current_stats[StatsName.MANA.value], cost, [self.visible_sprites])
         else:
-            self.magic.flame_attack(self, strength,  self.current_stats[StatsName.MANA.value], cost, [self.visible_sprites])
+            self.magic_animations.flame_attack(self, strength, self.current_stats[StatsName.MANA.value], cost, [self.visible_sprites])
 
     def switch_weapon(self, direction):
         Log.info(f"Weapon switch direction {direction}")
@@ -218,24 +221,7 @@ class Player(Entity):
                         self.particle_animations.create_grass_particles(pos, self.visible_sprites)
                     attackable_sprite.kill()
 
-    def attack(self):
-        direction = self.movement_status.split('_')[0]
-        Log.info(f"Direction of attack is {direction}")
-        attack = None
-        if direction == Movement.RIGHT.value:
-            attack = self.image.get_rect(center=self.rect.center)
-            attack.x += 32
-        elif direction == Movement.LEFT.value:
-            attack = self.image.get_rect(center=self.rect.center)
-            attack.x -= 32
-        elif direction == Movement.DOWN.value:
-            attack = self.image.get_rect(center=self.rect.center)
-            attack.y += 32
-        elif direction == Movement.UP.value:
-            attack = self.image.get_rect(center=self.rect.center)
-            attack.y -= 32
-        attack = attack.inflate(0, -32)
-
+    def attack(self, attack):
         for attackable_sprite in self.attackable_sprites:
             if attackable_sprite.hitbox.colliderect(attack):
                 if attackable_sprite.sprite_type == "enemy":
@@ -259,7 +245,6 @@ class Player(Entity):
             if self.is_attacking:
                 self.is_attacking = False
                 self.attack_cooldown.start_timer()
-                self.attack()
             self.frame_index = 0
         self.image = self.animations[self.movement_status][int(self.frame_index)]
 

@@ -19,7 +19,7 @@ class GameDebugger:
     def hitbox_debug(cls, visible_sprites, obstacle_sprite, player):
 
         for sprite in visible_sprites:
-            if sprite.sprite_type == "particle" and cls.draw_particle_hitbox:
+            if (sprite.sprite_type == "particle" or sprite.sprite_type == "attack_signature") and cls.draw_particle_hitbox:
                 x, y = cls.get_offset(sprite, player)
                 pygame.draw.rect(pygame.display.get_surface(), (0, 255, 255), pygame.Rect(x, y, sprite.hitbox.width, sprite.hitbox.height), 2)
 

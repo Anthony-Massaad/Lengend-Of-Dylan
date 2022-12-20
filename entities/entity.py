@@ -9,7 +9,7 @@ import abc
 
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, groups: pygame.sprite.Group, visible_sprites, obstacle_sprites, attackable_sprites, pos, movement, folder_path, sprite_name, particle_animations):
+    def __init__(self, groups: pygame.sprite.Group, visible_sprites, obstacle_sprites, attackable_sprites, pos, movement, folder_path, sprite_name, particle_animations, attack_sig_animations):
         super().__init__(groups)
         self.current_stats = entity_data[sprite_name].copy()
         self.sprite_name = sprite_name
@@ -43,6 +43,7 @@ class Entity(pygame.sprite.Sprite):
         self.is_attacking = False
         self.attack_cooldown = Timer(self.current_stats[StatsName.ATTACK_COOLDOWN.value])
         self.particle_animations = particle_animations
+        self.attack_sig_animations = attack_sig_animations
 
 
     def move(self, delta_time: float):
@@ -98,9 +99,9 @@ class Entity(pygame.sprite.Sprite):
     def update_timers(self):
         return
 
-    @abc.abstractmethod
-    def attack(self):
-        return
+    # @abc.abstractmethod
+    # def attack(self):
+    #     return
 
     def is_attacked(self, entity_attack):
         self.current_stats[StatsName.HEALTH.value] -= entity_attack
