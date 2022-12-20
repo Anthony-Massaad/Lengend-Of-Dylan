@@ -240,7 +240,7 @@ class Player(Entity):
         Log.debug(f"Mana regenerating. Current {self.current_stats[StatsName.MANA.value]}")
 
     def animate_entity(self, delta_time: float):
-        self.frame_index += 4 * delta_time * 2
+        self.frame_index += 12 * delta_time
         if self.frame_index >= len(self.animations[self.movement_status]):
             if self.is_attacking:
                 self.is_attacking = False
