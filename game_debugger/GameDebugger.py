@@ -6,7 +6,7 @@ class GameDebugger:
     draw_enemy_radius = False
     draw_obstacles = True
     draw_enemy_hitbox = True
-    draw_player_hitbox = True
+    draw_player_hitbox = False
     draw_particle_hitbox = True
 
     @classmethod

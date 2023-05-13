@@ -1,6 +1,6 @@
 import pygame
 
-from constants import StatsName, CollisionName, entity_data, FilePath
+from constants import StatsName, CollisionName, entity_data, FilePath, GAME_WIDTH, GAME_HEIGHT
 from support_functions.support_functions import SupportFunctions
 from logger.log import Log
 from timer.timer import Timer
@@ -32,7 +32,7 @@ class Entity(pygame.sprite.Sprite):
         # graphic_setup
         self.image = self.animations[self.movement_status][self.frame_index]
         self.rect = self.image.get_rect(topleft=pos)
-        self.hitbox = self.rect.inflate(-5, -20)
+        self.hitbox = self.rect.inflate(-20, -25)
 
         self.position = pygame.math.Vector2(self.rect.topleft)
         self.game_obstacle_sprites = obstacle_sprites
@@ -68,7 +68,7 @@ class Entity(pygame.sprite.Sprite):
             for sprite in self.game_obstacle_sprites:
                 if sprite.hitbox.colliderect(self.hitbox):
                     # check right
-                    # move the overlap to the left side of the sprite
+                    # move the overlap to the left side of the sprite          
                     if self.direction.x > 0:
                         self.hitbox.right = sprite.hitbox.left
                     # check left
@@ -81,10 +81,10 @@ class Entity(pygame.sprite.Sprite):
                 if sprite.hitbox.colliderect(self.hitbox):
                     # check down
                     if self.direction.y > 0:
-                        self.hitbox.bottom = sprite.hitbox.top
+                        self.hitbox.bottom = sprite.hitbox.top + 15 
                     # check up
                     if self.direction.y < 0:
-                        self.hitbox.top = sprite.hitbox.bottom
+                        self.hitbox.top = sprite.hitbox.bottom - 15
                     self.position.y = self.hitbox.y
 
     @abc.abstractmethod
